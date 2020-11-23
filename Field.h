@@ -1,5 +1,6 @@
 #define GLFW_INCLUDE_GLU
 #define GLFW_DLL
+#include "GL/glew.h"
 #include <GLFW/glfw3.h>
 #include <GL/glut.h>
 #include <GL/gl.h>
@@ -17,6 +18,7 @@ struct FieldColor {
 struct Field {
     int fieldId;
     int state = 0;
+    int fieldBufferIndex;
     FieldColor color = {1, 1, 1};
     std::pair<double, double> fieldCenter;
     std::vector<Point> fieldPoints;

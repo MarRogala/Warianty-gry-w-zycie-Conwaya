@@ -15,7 +15,7 @@ else
 endif
 
 all:
-	clang++ -g -w -Wall -std=c++11 *.cpp -o main -lglfw -lGLU -lGL -lm -lglut
+	clang++ -g -w -Wall -std=c++11 *.cpp -o main -lglfw -lGLU -lGL -lm -lglut -lGLEW
 
 clean:
 	rm -rf *.o main
