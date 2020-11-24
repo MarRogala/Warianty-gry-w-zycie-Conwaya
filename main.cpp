@@ -7,7 +7,7 @@
 extern struct Board board;
 Game game;
 
-void initializeOpenGL(int argc, char **argv)
+void initializeMultisample(int argc, char **argv)
 {
 
 	//glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA | GLUT_MULTISAMPLE);
@@ -93,7 +93,7 @@ int main(int argc, char **argv)
     if (!glfwInit())
         return -1;
 
-    initializeOpenGL(argc, argv);
+    initializeMultisample(argc, argv);
 
     window = glfwCreateWindow(600, 600, "Game of life", NULL, NULL);
     if (!window)
@@ -104,15 +104,17 @@ int main(int argc, char **argv)
 
     glfwMakeContextCurrent(window);
 
-    if(!glewInit())
+    if(glewInit() != GLEW_OK)
         std::cout << "GLEW INIT ERROR\n";
 
-    board.fillFieldsCenters(10000);
+    board.fillFieldsCenters(100000);
     board.neighbours(3);
 
+    int cnt = 0;
     while (!glfwWindowShouldClose(window))
     {
         renderScene();
+        std::cout << cnt ++ << "\n";
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

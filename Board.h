@@ -6,6 +6,7 @@ struct Board {
 
     unsigned int linesBuffer;
     unsigned int trianglesBuffer;
+    unsigned int lineShader, triangleShader;
     double* lines;
     double* triangles;
     int linesSize = 0;

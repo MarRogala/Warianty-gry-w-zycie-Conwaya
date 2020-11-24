@@ -5,6 +5,6 @@
 #include <GL/glut.h>
 #include <GL/gl.h>
 
-void initializeOpenGL(int argc, char **argv);
+void initializeMultisample(int argc, char **argv);
 void initializeMenu();
 void processMenuEvents(int option);

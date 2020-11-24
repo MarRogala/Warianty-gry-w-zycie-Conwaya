@@ -42,15 +42,16 @@ void Board::createBuffers()
 {
     for(auto f: fields)
     {
-        linesSize += (int)f.fieldEdges.size();
+        linesSize += f.fieldEdges.size();
         trianglesSize += f.fieldPoints.size();
     }
     lines = (double*)malloc(4 * linesSize * sizeof(double)); // start end
-    triangles = (double*)malloc(7 * trianglesSize * sizeof(double)); // state (color itp), 3 points
+    triangles = (double*)malloc(15 * trianglesSize * sizeof(double)); // state (color itp), 3 points
 
     int linesIndex = 0;
     int trianglesIndex = 0;
     int fieldIndex = 0;
+
     for(auto f:fields)
     {
         for(auto l: f.fieldEdges)
@@ -62,39 +63,49 @@ void Board::createBuffers()
             linesIndex += 4;
         }
 
-        fields[f.fieldId].fieldBufferIndex = fieldIndex ++;
-        triangles[0] = f.state;
-        triangles[1] = f.fieldPoints[0].x;
-        triangles[2] = f.fieldPoints[0].y;
-        triangles[3] = f.fieldPoints.back().x;
-        triangles[4] = f.fieldPoints.back().y;
-        triangles[5] = f.fieldCenter.first;
-        triangles[6] = f.fieldCenter.second;
-        trianglesIndex += 7;
-        for(int i = 1; i < (int)f.fieldPoints.size(); i ++)
+        //fields[f.fieldId].fieldBufferIndex = fieldIndex ++;
+
+        for(unsigned int i = 0; i < f.fieldPoints.size(); i ++)
         {
-            triangles[trianglesIndex] = f.state;
-            triangles[trianglesIndex + 1] = f.fieldPoints[i].x;
-            triangles[trianglesIndex + 2] = f.fieldPoints[i].y;
-            triangles[trianglesIndex + 3] = f.fieldPoints[i - 1].x;
-            triangles[trianglesIndex + 4] = f.fieldPoints[i - 1].y;
-            triangles[trianglesIndex + 5] = f.fieldCenter.first;
-            triangles[trianglesIndex + 6] = f.fieldCenter.second;
-            trianglesIndex += 7;
+            triangles[trianglesIndex + 0] = f.fieldPoints[i].x;
+            triangles[trianglesIndex + 1] = f.fieldPoints[i].y;
+            triangles[trianglesIndex + 2] = f.color.r;
+            triangles[trianglesIndex + 3] = f.color.g;
+            triangles[trianglesIndex + 4] = f.color.b;
+            if(i == 0)
+            {
+                triangles[trianglesIndex + 5] = f.fieldPoints.back().x;
+                triangles[trianglesIndex + 6] = f.fieldPoints.back().y;
+            }
+            else
+            {
+                triangles[trianglesIndex + 5] = f.fieldPoints[i - 1].x;
+                triangles[trianglesIndex + 6] = f.fieldPoints[i - 1].y;
+            }
+            triangles[trianglesIndex + 7] = f.color.r;
+            triangles[trianglesIndex + 8] = f.color.g;
+            triangles[trianglesIndex + 9] = f.color.b;
+            triangles[trianglesIndex + 10] = f.fieldCenter.first;
+            triangles[trianglesIndex + 11] = f.fieldCenter.second;
+            triangles[trianglesIndex + 12] = f.color.r;
+            triangles[trianglesIndex + 13] = f.color.g;
+            triangles[trianglesIndex + 14] = f.color.b;
+            trianglesIndex += 15;
         }
     } // arrays filled
 
     GLuint vertexBuffers[2];
     glGenBuffers(2, vertexBuffers);
     linesBuffer = vertexBuffers[0];
-    //trianglesBuffer = vertexBuffers[1];
+    trianglesBuffer = vertexBuffers[1];
 
     glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
     glBufferData(GL_ARRAY_BUFFER, 4 * linesSize * sizeof(double), lines, GL_STATIC_DRAW);
-    glEnableVertexAttribArray(0);
-    glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, sizeof(double) * 2, 0);
+    //glEnableVertexAttribArray(0);
+    //glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, sizeof(double) * 2, 0);
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, trianglesBuffer);
+    glBufferData(GL_ARRAY_BUFFER, 15 * trianglesSize * sizeof(double), triangles, GL_DYNAMIC_DRAW);
 
     std::string lineVertexShader =
      R"(#version 300 es
@@ -104,20 +115,45 @@ void Board::createBuffers()
             gl_Position = position;
         })";
 
-    std::string lineFragmentShader =
+    std::string linesFragmentShader =
      R"(#version 300 es
         precision mediump float;
-        out mediump vec4 color;
+        out mediump vec4 color1;
         void main()
         {
-            color = vec4(0.0, 1.0, 0.0, 1.0);
+            color1 = vec4(0.0, 0.0, 0.0, 1.0);
+        })";
+
+    std::string triangleVertexShader =
+     R"(#version 300 es
+        layout(location = 0) in vec4 position;
+        layout(location = 1) in vec3 colorIn1;
+
+        precision mediump float;
+        out mediump vec4 color2;
+
+        void main()
+        {
+            gl_Position = position;
+            color2 = vec4(colorIn1, 1.0);
+        })";
+    std::string trianglesFragmentShader =
+     R"(#version 300 es
+         precision mediump float;
+         in mediump vec4 color2;
+         out mediump vec4 color3;
+         void main()
+         {
+            color3 = color2;
         })";
 
     //std::string triangleVertexShader;
     //std::string triangleFrangmetShader;
 
-    unsigned int lineShader = CreateShader(lineVertexShader, lineFragmentShader);
-    glUseProgram(lineShader);
+    //unsigned int lineShader = CreateShader(lineVertexShader, lineFragmentShader);
+    lineShader = CreateShader(lineVertexShader, linesFragmentShader);
+    triangleShader = CreateShader(triangleVertexShader, trianglesFragmentShader);
+    //glUseProgram(lineShader);
 }
 
 void Board::fillFieldsCenters(int fieldsNumber)
@@ -201,6 +237,21 @@ void Board::print()
         //field.color = {r, g, b};
         field.print();
     }*/
+
+    //triangles drawing
+    glBindBuffer(GL_ARRAY_BUFFER, trianglesBuffer);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, sizeof(double) * 5, 0);
+    glEnableVertexAttribArray(1);
+    glVertexAttribPointer(1, 3, GL_DOUBLE, GL_FALSE, sizeof(double) * 5, (const void*)(2 * sizeof(double)));
+    glUseProgram(triangleShader);
+    glDrawArrays(GL_TRIANGLES, 0, trianglesSize * 3);
+
+    //lines drowing
+    glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, sizeof(double) * 2, 0);
+    glUseProgram(lineShader);
     glDrawArrays(GL_LINES, 0, linesSize * 2);
 }
 

@@ -4,7 +4,12 @@
 
 Field::Field() { }
 Field::Field(int id, std::vector<Point> points) : fieldId(id), fieldPoints(points) { }
-Field::Field(int id, std::pair<double, double> center) : fieldId(id), fieldCenter(center) { }
+Field::Field(int id, std::pair<double, double> center) : fieldId(id), fieldCenter(center) {
+    float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    float g = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    float b = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
+    color = {r, g, b};
+}
 
 inline bool operator<(const Point& lhs, const Point& rhs)
 {

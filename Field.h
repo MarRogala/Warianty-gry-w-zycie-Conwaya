@@ -19,7 +19,7 @@ struct Field {
     int fieldId;
     int state = 0;
     int fieldBufferIndex;
-    FieldColor color = {1, 1, 1};
+    FieldColor color = {0.0, 0.0, 1.0};
     std::pair<double, double> fieldCenter;
     std::vector<Point> fieldPoints;
     std::vector<Edge> fieldEdges;
