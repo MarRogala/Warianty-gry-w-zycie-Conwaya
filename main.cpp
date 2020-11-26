@@ -50,12 +50,12 @@ void initializeMenu()
     glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
 
-void timerFunc(int data)
+/*void timerFunc(int data)
 {
     game.doStep(data);
     glutTimerFunc(1, timerFunc, 1);
     glutPostRedisplay();
-}
+}*/
 
 void renderScene()
 {
@@ -110,11 +110,12 @@ int main(int argc, char **argv)
     board.fillFieldsCenters(100000);
     board.neighbours(3);
 
-    int cnt = 0;
+    game.gameSetup();
+
     while (!glfwWindowShouldClose(window))
     {
         renderScene();
-        std::cout << cnt ++ << "\n";
+        game.doStep();
         glfwSwapBuffers(window);
         glfwPollEvents();
     }

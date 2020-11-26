@@ -5,6 +5,8 @@
 struct Game {
 
     std::vector<int> candidates;
-    void gameSetup(int n);
-    void doStep(int data);
+    FieldColor red = {1, 0, 0};
+    FieldColor white = {1, 1, 1};
+    void gameSetup();
+    void doStep();
 };

@@ -1,5 +1,22 @@
 #include "Board.h"
 
+void Board::changeFieldColor(int fieldId, FieldColor color)
+{
+    int index = fields[fieldId].fieldBufferOffset;
+    glBindBuffer(GL_ARRAY_BUFFER, trianglesBuffer);
+    double data[3] = {color.r, color.g, color.b};
+    for(unsigned int i = 0; i < fields[fieldId].fieldPoints.size(); i ++)
+    {
+        //glBufferData(GL_ARRAY_BUFFER, 15 * trianglesSize * sizeof(double), triangles, GL_DYNAMIC_DRAW);
+        glBufferSubData(GL_ARRAY_BUFFER, (index + 2) * sizeof(double), 3 * sizeof(double), data);
+        index += 5;
+        glBufferSubData(GL_ARRAY_BUFFER, (index + 2) * sizeof(double), 3 * sizeof(double), data);
+        index += 5;
+        glBufferSubData(GL_ARRAY_BUFFER, (index + 2) * sizeof(double), 3 * sizeof(double), data);
+        index += 5;
+    }
+}
+
 unsigned int Board::CompileShader(unsigned int type, std::string& source) // should be ok
 {
     unsigned int id = glCreateShader(type);
@@ -50,7 +67,6 @@ void Board::createBuffers()
 
     int linesIndex = 0;
     int trianglesIndex = 0;
-    int fieldIndex = 0;
 
     for(auto f:fields)
     {
@@ -64,6 +80,7 @@ void Board::createBuffers()
         }
 
         //fields[f.fieldId].fieldBufferIndex = fieldIndex ++;
+        fields[f.fieldId].fieldBufferOffset = trianglesIndex;
 
         for(unsigned int i = 0; i < f.fieldPoints.size(); i ++)
         {
@@ -101,8 +118,6 @@ void Board::createBuffers()
 
     glBindBuffer(GL_ARRAY_BUFFER, linesBuffer);
     glBufferData(GL_ARRAY_BUFFER, 4 * linesSize * sizeof(double), lines, GL_STATIC_DRAW);
-    //glEnableVertexAttribArray(0);
-    //glVertexAttribPointer(0, 2, GL_DOUBLE, GL_FALSE, sizeof(double) * 2, 0);
 
     glBindBuffer(GL_ARRAY_BUFFER, trianglesBuffer);
     glBufferData(GL_ARRAY_BUFFER, 15 * trianglesSize * sizeof(double), triangles, GL_DYNAMIC_DRAW);
@@ -147,13 +162,9 @@ void Board::createBuffers()
             color3 = color2;
         })";
 
-    //std::string triangleVertexShader;
-    //std::string triangleFrangmetShader;
 
-    //unsigned int lineShader = CreateShader(lineVertexShader, lineFragmentShader);
     lineShader = CreateShader(lineVertexShader, linesFragmentShader);
     triangleShader = CreateShader(triangleVertexShader, trianglesFragmentShader);
-    //glUseProgram(lineShader);
 }
 
 void Board::fillFieldsCenters(int fieldsNumber)
@@ -231,10 +242,6 @@ void Board::print()
 {
     /*for(auto field : fields)
     {
-        //float r = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-        //float g = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-        //float b = static_cast <float> (rand()) / static_cast <float> (RAND_MAX);
-        //field.color = {r, g, b};
         field.print();
     }*/
 
@@ -259,10 +266,4 @@ void Board::neighbours(int v)
 {
     fields[v].color = {1, 0, 0};
     fields[v].state = 1;
-
-    /*for(auto u: fields[v].neighbours)
-    {
-        fields[u].color = {1, 0, 0};
-        fields[u].state = 1;
-    }*/
 }

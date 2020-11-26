@@ -18,7 +18,7 @@ struct FieldColor {
 struct Field {
     int fieldId;
     int state = 0;
-    int fieldBufferIndex;
+    int fieldBufferOffset;
     FieldColor color = {0.0, 0.0, 1.0};
     std::pair<double, double> fieldCenter;
     std::vector<Point> fieldPoints;

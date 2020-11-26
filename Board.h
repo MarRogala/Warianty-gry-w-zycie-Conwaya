@@ -16,6 +16,7 @@ struct Board {
     unsigned int CompileShader(unsigned int type, std::string& source);
     unsigned int CreateShader(std::string& vertexShader, std::string& fragmentShader);
     void createBuffers();
+    void changeFieldColor(int fieldId, FieldColor color);
     void fillFieldsCenters(int fieldsNumber);
     void print();
     void neighbours(int v);
