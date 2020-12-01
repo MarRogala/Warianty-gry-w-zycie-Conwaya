@@ -7,8 +7,8 @@ struct Board {
     unsigned int linesBuffer;
     unsigned int trianglesBuffer;
     unsigned int lineShader, triangleShader;
-    double* lines;
-    double* triangles;
+    float* lines;
+    float* triangles;
     int linesSize = 0;
     int trianglesSize = 0;
 

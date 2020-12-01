@@ -50,6 +50,8 @@ int main(int argc, char **argv)
     if(glewInit() != GLEW_OK)
         std::cout << "GLEW INIT ERROR\n";
 
+    glClearColor(0.0, 0.0, 0.0, 0.0);
+
     board.fillFieldsCenters(100000);
     board.neighbours(3);
 

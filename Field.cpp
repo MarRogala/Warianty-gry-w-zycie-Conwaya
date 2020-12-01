@@ -50,12 +50,6 @@ void Field::print()
     {
         glColor3f(1, 1, 1);
     }
-    /*glBegin(GL_POLYGON);
-    for(auto point: fieldPoints)
-    {
-        glVertex2f(point.x, point.y);
-    }
-    glEnd();*/
     glBegin(GL_TRIANGLES);
     glVertex2f(fieldPoints[0].x, fieldPoints[0].y);
     glVertex2f(fieldPoints.back().x, fieldPoints.back().y);
@@ -67,13 +61,4 @@ void Field::print()
         glVertex2f(fieldCenter.first, fieldCenter.second);
     }
     glEnd();
-
-    /*glColor3f(0.0, 1.0, 0.0);
-    glLineWidth(3.0);
-    glBegin(GL_LINE_LOOP);
-    for(auto point: fieldPoints)
-    {
-        glVertex2f(point.x, point.y);
-    }
-    glEnd();*/
 }

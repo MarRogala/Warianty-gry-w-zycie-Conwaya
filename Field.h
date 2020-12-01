@@ -11,8 +11,8 @@
 #include "Voronoi.h"
 
 struct FieldColor {
-    double r, g, b;
-    FieldColor(double R, double G, double B) : r(R), g(G), b(B) { }
+    float r, g, b;
+    FieldColor(float R, float G, float B) : r(R), g(G), b(B) { }
 };
 
 struct Field {
