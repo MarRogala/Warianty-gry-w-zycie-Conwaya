@@ -3,6 +3,26 @@
 #include "main.h"
 #include "Game.h"
 #include <cstdlib>
+#include "Parsing.h"
+
+void testSilmpleParsing()
+{
+    string_input in1("aaa[bbb]=10+ccc;", "content");
+    try {
+        const auto root = parse_tree::parse< language::grammar, parse_tree::node, language::selector >( in1 );
+        parse_tree::print_dot( std::cout, *root );
+        return;
+    }
+    catch( const parse_error& e ) {
+        const auto p = e.positions().front();
+        std::cerr << e.what() << std::endl
+                << in1.line_at( p ) << std::endl
+                << std::setw( p.column ) << '^' << std::endl;
+    }
+    catch( const std::exception& e ) {
+        std::cerr << e.what() << std::endl;
+    }
+}
 
 extern struct Board board;
 Game game;
@@ -52,10 +72,13 @@ int main(int argc, char **argv)
 
     glClearColor(0.0, 0.0, 0.0, 0.0);
 
-    board.fillFieldsCenters(100000);
+    board.fillFieldsCenters(100);
     board.neighbours(3);
 
+    testSilmpleParsing();
+
     game.gameSetup();
+
 
     while (!glfwWindowShouldClose(window))
     {
