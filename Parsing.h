@@ -149,7 +149,15 @@ namespace language
         one< '}' >
    > {};
 
-   struct grammar : must< ifStatement, eof > {};
+   struct instruction : sor<
+        functionCall,
+        ifStatement,
+        assignment
+   > {};
+
+   struct program : star < instruction > {};
+
+   struct grammar : must< program, eof > {};
    // clang-format on
 
    template< typename Rule >
