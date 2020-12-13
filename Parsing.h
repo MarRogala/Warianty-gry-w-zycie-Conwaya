@@ -139,7 +139,17 @@ namespace language
         one < ';' >
    > {};
 
-   struct grammar : must< assignment, eof > {};
+   struct ifStatement : seq <
+        string< 'i', 'f' >,
+        one< '(' >,
+        variable,
+        one< ')' >,
+        one< '{' >,
+        star< assignment >,
+        one< '}' >
+   > {};
+
+   struct grammar : must< ifStatement, eof > {};
    // clang-format on
 
    template< typename Rule >
@@ -154,11 +164,13 @@ namespace language
          parse_tree::fold_one::on <
             expressionValue,
             simpleExpression,
+            ifStatement,
             functionCall
         >,
          parse_tree::remove_content::on<
             assignment,
             binaryExpression,
+            function,
             plus,
             minus,
             multiply,

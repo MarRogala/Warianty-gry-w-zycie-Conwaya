@@ -7,7 +7,8 @@
 
 void testSilmpleParsing()
 {
-    string_input in1("aaa[bbb]=10.0+ccc(1,2.0);", "content");
+    //string_input in1("aaa[bbb]=10.0+ccc(1,2.0);", "content");
+    string_input in1("if(name){aaa=10.0;tab[0]=10.0+ccc(1,2.0);}", "content");
     try {
         const auto root = parse_tree::parse< language::grammar, parse_tree::node, language::selector >( in1 );
         parse_tree::print_dot( std::cout, *root );
