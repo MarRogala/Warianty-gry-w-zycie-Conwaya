@@ -4,7 +4,3 @@
 #include <GLFW/glfw3.h>
 #include <GL/glut.h>
 #include <GL/gl.h>
-
-void initializeMultisample(int argc, char **argv);
-void initializeMenu();
-void processMenuEvents(int option);

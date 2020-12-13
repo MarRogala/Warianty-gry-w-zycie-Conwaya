@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <type_traits>
+#include <vector>
 
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
@@ -10,6 +11,59 @@
 
 
 using namespace TAO_PEGTL_NAMESPACE;
+
+namespace inputFile {
+
+    std::vector<std::vector<float>> parseInitData(std::string path);
+
+    struct positiveInteger : plus < digit > {};
+
+    struct integer : seq <
+         opt<one<'-'>>,
+         positiveInteger
+     > {};
+
+     struct floatingPoint : seq <
+         opt < one < '-' > >,
+         plus < digit >,
+         one < '.' >,
+         plus < digit >
+     > {};
+
+     struct line : seq <
+        one<'('>,
+        list <sor < floatingPoint, integer >, one< ',' >, one< ' ' > >,
+        one<')'>,
+        one<'('>,
+        list <sor < floatingPoint, integer >, one< ',' >, one< ' ' > >,
+        one<')'>
+     > {};
+
+     struct grammar : must< line, eof > {};
+
+     template< typename Rule >
+     struct my_action
+        : nothing< Rule > {};
+
+     template<>
+     struct my_action< sor< floatingPoint, integer > >
+     {
+        template< typename ActionInput >
+        static void apply( const ActionInput& in, std::vector<float>& out )
+        {
+            float value = std::stof(in.string());
+            out.push_back(value);
+        }
+    };
+
+    template< typename ParseInput >
+    std::vector<float> parseOneLine( ParseInput& in )
+    {
+       std::vector<float> out;
+       parse< grammar, my_action >( in, out );
+       return out;
+   }
+}
 
 namespace language
 {
@@ -85,7 +139,7 @@ namespace language
         one < ';' >
    > {};
 
-   struct grammar : must< functionCall, eof > {};
+   struct grammar : must< assignment, eof > {};
    // clang-format on
 
    template< typename Rule >

@@ -7,10 +7,18 @@
 
 void testSilmpleParsing()
 {
-    string_input in1("aaa[bbb]=10+ccc;", "content");
+    string_input in1("aaa[bbb]=10.0+ccc(1,2.0);", "content");
     try {
         const auto root = parse_tree::parse< language::grammar, parse_tree::node, language::selector >( in1 );
         parse_tree::print_dot( std::cout, *root );
+
+        auto r = inputFile::parseInitData("input.txt");
+        for(auto x: r)
+        {
+            for(auto y: x)
+                std::cout << y << " ";
+            std::cout << "\n";
+        }
         return;
     }
     catch( const parse_error& e ) {
@@ -26,20 +34,6 @@ void testSilmpleParsing()
 
 extern struct Board board;
 Game game;
-
-void initializeMultisample(int argc, char **argv)
-{
-	//glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA | GLUT_MULTISAMPLE);
-    //glEnable(GL_MULTISAMPLE);
-    //glHint(GL_MULTISAMPLE_FILTER_HINT_NV, GL_NICEST);
-    /*GLint iMultiSample = 0;
-    GLint iNumSamples = 0;
-    glGetIntegerv(GL_SAMPLE_BUFFERS, &iMultiSample);
-    glGetIntegerv(GL_SAMPLES, &iNumSamples);*/
-	//glutInitWindowPosition(100,100);
-	//glutInitWindowSize(700, 700);
-	//glutCreateWindow("Game of life");
-}
 
 void renderScene()
 {
@@ -76,7 +70,6 @@ int main(int argc, char **argv)
     board.neighbours(3);
 
     testSilmpleParsing();
-
     game.gameSetup();
 
 
