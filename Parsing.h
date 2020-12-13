@@ -38,7 +38,22 @@ namespace language
         one< ']' >
    > {};
 
-   struct expressionValue : sor< arrayVariable, variable, floatingPoint, integer > {};
+   struct function : seq <
+        variable,
+        one< '(' >,
+        list_must<
+            sor<floatingPoint, integer>,
+            one< ',' >
+        >,
+        one< ')' >
+   > {};
+
+   struct functionCall : seq <
+        function,
+        one< ';' >
+   > {};
+
+   struct expressionValue : sor< function, arrayVariable, variable, floatingPoint, integer > {};
 
    struct plus : pad< one< '+' >, space > {};
    struct minus : pad< one< '-' >, space > {};
@@ -70,7 +85,7 @@ namespace language
         one < ';' >
    > {};
 
-   struct grammar : must< assignment, eof > {};
+   struct grammar : must< functionCall, eof > {};
    // clang-format on
 
    template< typename Rule >
@@ -84,7 +99,8 @@ namespace language
          >,
          parse_tree::fold_one::on <
             expressionValue,
-            simpleExpression
+            simpleExpression,
+            functionCall
         >,
          parse_tree::remove_content::on<
             assignment,
