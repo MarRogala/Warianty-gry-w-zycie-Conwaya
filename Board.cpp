@@ -150,6 +150,7 @@ void Board::createBuffers()
             gl_Position = position;
             color2 = vec4(colorIn1, 1.0);
         })";
+
     std::string trianglesFragmentShader =
      R"(#version 300 es
          precision mediump float;
@@ -158,7 +159,7 @@ void Board::createBuffers()
          void main()
          {
             color3 = color2;
-        })";
+         })";
 
 
     lineShader = CreateShader(lineVertexShader, linesFragmentShader);
