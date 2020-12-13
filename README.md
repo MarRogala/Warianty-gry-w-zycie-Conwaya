@@ -2,8 +2,8 @@
 
 ## Status
 Działający generator diagramów Woronoja. Poprawione rysowanie, używając glew.
-Parser przypisań prostych wyrażeń do zmiennych i zmiennych z indeksem.
-Wykorzystywana biblioteka to PEGTL.
+
+Działający parser podstawowego języka i pliku z początkowymi stanami.
 
 ## Wymagane biblioteki
 1. glfw
@@ -11,7 +11,7 @@ Wykorzystywana biblioteka to PEGTL.
 3. freeglut
 4. kompilator clang w wersji 9.0 lub nowszej
 5. pegtl
-    
+
 ## Kompilacja
 1. make clean
 2. make
