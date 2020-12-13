@@ -67,6 +67,10 @@ namespace inputFile {
 
 namespace language
 {
+    std::unique_ptr<parse_tree::node> parseINITprogram();
+    std::unique_ptr<parse_tree::node> parseTRANSITIONprogram();
+    std::unique_ptr<parse_tree::node> parseCOLORprogram();
+    void printError(parse_error e, std::string program, std::string name);
    // clang-format off
 
    struct positiveInteger : plus < digit > {};
