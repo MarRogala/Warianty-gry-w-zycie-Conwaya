@@ -166,27 +166,8 @@ void Board::createBuffers()
     triangleShader = CreateShader(triangleVertexShader, trianglesFragmentShader);
 }
 
-void Board::fillFieldsCenters(int fieldsNumber)
+void Board::generateVoronoi()
 {
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_real_distribution<double> dist(-1.0, 1.0);
-
-    for(unsigned int i = 0; i < fieldsNumber; i ++)
-    {
-        std::pair<double, double> center = {dist(mt), dist(mt)};
-        fields.push_back(Field(i, center));
-    }
-
-    /*fields.push_back(Field(0, {0.116759, -0.950588}));
-    fields.push_back(Field(1, {-0.458969, -0.830154}));
-    fields.push_back(Field(2, {-0.251897, 0.928944}));
-    fields.push_back(Field(3, {0.551897, 0.968944}));
-    //fields.push_back(Field(4, {-0.351897, 0.128944}));
-    fields.push_back(Field(4, {0.991897, 0.828944}));
-    //fields.push_back(Field(6, {0.011897, -0.928944}));
-    fields.push_back(Field(5, {0.581897, -0.938944}));*/
-
     std::priority_queue<Event, std::vector<Event>, Compare> eventQueue;
     Beachline beachline = Beachline(fields.size());
 
@@ -235,6 +216,28 @@ void Board::fillFieldsCenters(int fieldsNumber)
     }
 }
 
+void Board::fillFieldsCenters(int fieldsNumber)
+{
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<double> dist(-1.0, 1.0);
+
+    for(unsigned int i = 0; i < fieldsNumber; i ++)
+    {
+        std::pair<double, double> center = {dist(mt), dist(mt)};
+        fields.push_back(Field(i, center));
+    }
+
+    /*fields.push_back(Field(0, {0.116759, -0.950588}));
+    fields.push_back(Field(1, {-0.458969, -0.830154}));
+    fields.push_back(Field(2, {-0.251897, 0.928944}));
+    fields.push_back(Field(3, {0.551897, 0.968944}));
+    //fields.push_back(Field(4, {-0.351897, 0.128944}));
+    fields.push_back(Field(4, {0.991897, 0.828944}));
+    //fields.push_back(Field(6, {0.011897, -0.928944}));
+    fields.push_back(Field(5, {0.581897, -0.938944}));*/
+}
+
 Board::Board() = default;
 
 void Board::print()
@@ -259,5 +262,5 @@ void Board::print()
 void Board::neighbours(int v)
 {
     fields[v].color = {1, 0, 0};
-    fields[v].state = 1;
+    fields[v].state[0] = 1;
 }

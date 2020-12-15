@@ -3,7 +3,7 @@
 #include "main.h"
 #include "Game.h"
 #include <cstdlib>
-#include "Parsing.h"
+//#include "Parsing.h"
 
 void testSilmpleParsing()
 {
@@ -67,9 +67,6 @@ int main(int argc, char **argv)
         std::cout << "GLEW INIT ERROR\n";
 
     glClearColor(0.0, 0.0, 0.0, 0.0);
-
-    board.fillFieldsCenters(100);
-    board.neighbours(3);
 
     testSilmpleParsing();
     game.gameSetup();

@@ -17,6 +17,7 @@ struct Board {
     unsigned int CreateShader(std::string& vertexShader, std::string& fragmentShader);
     void createBuffers();
     void changeFieldColor(int fieldId, FieldColor color);
+    void generateVoronoi();
     void fillFieldsCenters(int fieldsNumber);
     void print();
     void neighbours(int v);

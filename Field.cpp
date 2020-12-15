@@ -42,14 +42,10 @@ void Field::print()
     {
         edge.print();
     }
-    if(state == 1)
-    {
-        glColor3f(1, 0, 0);
-    }
-    else
-    {
-        glColor3f(1, 1, 1);
-    }
+
+    // printing green field
+    glColor3f(0, 1, 0);
+
     glBegin(GL_TRIANGLES);
     glVertex2f(fieldPoints[0].x, fieldPoints[0].y);
     glVertex2f(fieldPoints.back().x, fieldPoints.back().y);
