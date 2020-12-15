@@ -164,6 +164,8 @@ void Board::createBuffers()
 
     lineShader = CreateShader(lineVertexShader, linesFragmentShader);
     triangleShader = CreateShader(triangleVertexShader, trianglesFragmentShader);
+    free(triangles);
+    free(lines);
 }
 
 void Board::generateVoronoi()

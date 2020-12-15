@@ -2,6 +2,23 @@
 #include <fstream>
 #include <stdio.h>
 
+std::string language::nodeToString(const std::string_view s)
+{
+    const char* first = s.data();
+    const char* firstCp = first;
+    const char* last = s.data() + s.size();
+
+    std::string result;
+
+    while(first != last)
+    {
+        const unsigned char c = *first;
+        result.push_back(c);
+        first ++;
+    }
+    return result;
+}
+
 void language::printError(parse_error e, std::string program, std::string name)
 {
     const auto p = e.positions().front();
@@ -32,7 +49,7 @@ void language::printError(parse_error e, std::string program, std::string name)
 std::unique_ptr<parse_tree::node> language::parseINITprogram()
 {
     std::fstream file;
-    file.open("INIT.txt", std::ios::in);
+    file.open("programs/INIT.txt", std::ios::in);
 
     if(file.good() != true )
     {
@@ -70,7 +87,7 @@ std::unique_ptr<parse_tree::node> language::parseINITprogram()
 std::unique_ptr<parse_tree::node> language::parseTRANSITIONprogram()
 {
     std::fstream file;
-    file.open("TRANSITION.txt", std::ios::in);
+    file.open("programs/TRANSITION.txt", std::ios::in);
 
     if(file.good() != true )
     {
@@ -105,11 +122,10 @@ std::unique_ptr<parse_tree::node> language::parseTRANSITIONprogram()
     }
 }
 
-
 std::unique_ptr<parse_tree::node> language::parseCOLORprogram()
 {
     std::fstream file;
-    file.open("COLOR.txt", std::ios::in);
+    file.open("programs/COLOR.txt", std::ios::in);
 
     if(file.good() != true )
     {

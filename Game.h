@@ -2,10 +2,10 @@
 #include "Parsing.h"
 
 #include <unordered_set>
-#include <memory>
+#include <unordered_map>
 
-typedef tao::pegtl::parse_tree::node nodeType;
-typedef std::unique_ptr<nodeType> nodePtr;
+typedef parse_tree::node nodeType;
+typedef std::unique_ptr<nodeType> ptrType;
 
 struct Game {
 
@@ -13,14 +13,23 @@ struct Game {
     FieldColor red = {1, 0, 0};
     FieldColor white = {1, 1, 1};
 
-    nodePtr TRANSITIONprogram;
+    ptrType INITprogram;
+    ptrType COLORprogram;
+    ptrType TRANSITIONprogram;
 
     std::vector<std::vector<float>> fileData;
+
+    std::unordered_map<std::string, float> variables;
+    std::vector<float> color, newColor;
+    std::vector<float> state, newState;
 
     void loadData();
     void gameSetup();
     void doStep();
 
-    void evaluateINITfunction(nodePtr);
-    void evaluateINITprogram();
+    void clearEnv();
+    void setEnv(int field);
+    void evaluateINITProgram();
+    void evaluateCOLORProgram(int field);
+    void evaluateTRANSITIONProgram(int field);
 };

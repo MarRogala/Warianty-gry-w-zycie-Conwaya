@@ -2,6 +2,45 @@
 
 Board board;
 
+void Game::clearEnv()
+{
+    state.clear();
+    newState.clear();
+    color.clear();
+    newColor.clear();
+    variables.clear();
+}
+
+void Game::setEnv(int field)
+{
+    clearEnv();
+    color[0] = board.fields[field].color.r;
+    color[1] = board.fields[field].color.g;
+    color[2] = board.fields[field].color.b;
+    for(unsigned int i = 0; i < board.fields[field].state.size(); i ++)
+        state.push_back(board.fields[field].state[i]);
+}
+
+void Game::evaluateINITProgram()
+{
+    if(INITprogram->is_root())
+    {
+        // nothing to do here
+    }
+}
+
+void Game::evaluateCOLORProgram(int field)
+{
+    setEnv(field);
+
+
+}
+
+void Game::evaluateTRANSITIONProgram(int field)
+{
+    setEnv(field);
+}
+
 void Game::loadData()
 {
     std::random_device rd;
@@ -34,9 +73,39 @@ void Game::loadData()
     }
 }
 
+void print_node( const parse_tree::node& n, const std::string& s = "" )
+{
+    // detect the root node:
+    if( n.is_root() ) {
+        std::cout << "ROOT" << std::endl;
+    }
+    else {
+        if( n.has_content() ) {
+            std::cout << n.type << "\n";
+            std::cout << "\n\n\nstr: " << language::nodeToString(n.string_view()) << "\n\n";
+        //    std::cout << s << n.name() << " \"" << n.content() << "\" at " << n.begin() << " to " << n.end() << std::endl;
+        }
+        else {
+            //std::cout << s << n.label() << " at " << n.begin() << std::endl;
+        }
+    }
+    // print all child nodes
+    if( !n.children.empty() ) {
+        const auto s2 = s + "  ";
+        for( auto& up : n.children ) {
+            print_node( *up, s2 );
+        }
+    }
+    }
+
 void Game::gameSetup()
 {
-    //INITprogram = language::parseINITprogram();
+    INITprogram = language::parseINITprogram();
+    COLORprogram = language::parseCOLORprogram();
+    TRANSITIONprogram = language::parseTRANSITIONprogram();
+
+    print_node(*INITprogram);
+    evaluateINITProgram();
 
     fileData = inputFile::parseInitData("input.txt");
 

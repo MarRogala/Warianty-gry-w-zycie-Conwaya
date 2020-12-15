@@ -5,6 +5,7 @@
 #include <type_traits>
 #include <vector>
 
+#include <memory>
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/contrib/parse_tree.hpp>
 #include <tao/pegtl/contrib/parse_tree_to_dot.hpp>
@@ -67,10 +68,12 @@ namespace inputFile {
 
 namespace language
 {
+    std::string nodeToString(const std::string_view s);
     std::unique_ptr<parse_tree::node> parseINITprogram();
     std::unique_ptr<parse_tree::node> parseTRANSITIONprogram();
     std::unique_ptr<parse_tree::node> parseCOLORprogram();
     void printError(parse_error e, std::string program, std::string name);
+
    // clang-format off
 
    struct positiveInteger : plus < digit > {};
