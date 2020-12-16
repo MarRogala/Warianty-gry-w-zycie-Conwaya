@@ -7,7 +7,7 @@
 
 void testSilmpleParsing()
 {
-    language::parseINITprogram();
+    //language::parseINITprogram();
     //string_input in1("aaa[bbb]=10.0+ccc(1,2.0);", "content");
     /*string_input in1("if(name){aaa=10.0;tab[0]=10.0+ccc(1,2.0);}fun(13.13);a=1;", "content");
     try {

@@ -73,38 +73,19 @@ void Game::loadData()
     }
 }
 
-void print_node( const parse_tree::node& n, const std::string& s = "" )
-{
-    // detect the root node:
-    if( n.is_root() ) {
-        std::cout << "ROOT" << std::endl;
-    }
-    else {
-        if( n.has_content() ) {
-            std::cout << n.type << "\n";
-            std::cout << "\n\n\nstr: " << language::nodeToString(n.string_view()) << "\n\n";
-        //    std::cout << s << n.name() << " \"" << n.content() << "\" at " << n.begin() << " to " << n.end() << std::endl;
-        }
-        else {
-            //std::cout << s << n.label() << " at " << n.begin() << std::endl;
-        }
-    }
-    // print all child nodes
-    if( !n.children.empty() ) {
-        const auto s2 = s + "  ";
-        for( auto& up : n.children ) {
-            print_node( *up, s2 );
-        }
-    }
-    }
-
 void Game::gameSetup()
 {
-    INITprogram = language::parseINITprogram();
-    COLORprogram = language::parseCOLORprogram();
-    TRANSITIONprogram = language::parseTRANSITIONprogram();
+    INITstring = language::readFile("programs/INIT.txt");
+    COLORstring = language::readFile("programs/COLOR.txt");
+    TRANSITIONstring = language::readFile("programs/TRANSITION.txt");
 
-    print_node(*INITprogram);
+    INITprogram = language::parseProgram(INITstring, "INIT");
+    COLORprogram = language::parseProgram(COLORstring, "COLOR");
+    TRANSITIONprogram = language::parseProgram(TRANSITIONstring, "TRANS");
+
+    //print_dot(std::cout, *INITprogram);
+    //print_dot( std::cout, *INITprogram);
+    //print_node(*INITprogram);
     evaluateINITProgram();
 
     fileData = inputFile::parseInitData("input.txt");

@@ -17,6 +17,8 @@ struct Game {
     ptrType COLORprogram;
     ptrType TRANSITIONprogram;
 
+    std::string INITstring, COLORstring, TRANSITIONstring;
+
     std::vector<std::vector<float>> fileData;
 
     std::unordered_map<std::string, float> variables;

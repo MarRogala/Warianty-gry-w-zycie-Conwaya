@@ -2,21 +2,36 @@
 #include <fstream>
 #include <stdio.h>
 
-std::string language::nodeToString(const std::string_view s)
+std::string language::nodeToString(std::string_view content)
 {
-    const char* first = s.data();
-    const char* firstCp = first;
-    const char* last = s.data() + s.size();
-
-    std::string result;
-
-    while(first != last)
+    std::string s;
+    for(const auto c: content)
     {
-        const unsigned char c = *first;
-        result.push_back(c);
-        first ++;
+        s.push_back(c);
     }
-    return result;
+    return s;
+}
+
+void print_node( const parse_tree::node& n, const std::string& s)
+{
+    if( n.is_root() ) {
+        std::cout << "ROOT" << std::endl;
+    }
+    else {
+        if( n.has_content() ) {
+            std::cout << "type: " << n.type << " at: " << n.begin() << " to " << n.end() << "\n";
+            std::cout << "str: " << language::nodeToString(n.string_view()) << "\n";
+        }
+        else {
+            std::cout << s << n.type << " at " << n.begin() << std::endl;
+        }
+    }
+    if( !n.children.empty() ) {
+        const auto s2 = s + "  ";
+        for( auto& up : n.children ) {
+            print_node( *up, s2 );
+        }
+    }
 }
 
 void language::printError(parse_error e, std::string program, std::string name)
@@ -46,14 +61,14 @@ void language::printError(parse_error e, std::string program, std::string name)
     std::cerr << wrongLine << std::endl;
 }
 
-std::unique_ptr<parse_tree::node> language::parseINITprogram()
+std::string language::readFile(std::string path)
 {
     std::fstream file;
-    file.open("programs/INIT.txt", std::ios::in);
+    file.open(path, std::ios::in);
 
     if(file.good() != true )
     {
-        throw "Wrong INIT program file";
+        throw "Wrong" + path + "program file";
     }
 
     std::string program;
@@ -68,90 +83,20 @@ std::unique_ptr<parse_tree::node> language::parseINITprogram()
                 program.push_back(c);
         }
     }
-    string_input inString(program, "INIT program");
+    return program;
+}
+
+std::unique_ptr<parse_tree::node> language::parseProgram(std::string program, std::string name)
+{
+
+    string_input inString(program, name);
     try {
         auto root = parse_tree::parse< grammar, parse_tree::node, selector >( inString );
         parse_tree::print_dot( std::cout, *root );
         return root;
     }
     catch( const parse_error& e ) {
-        printError(e, program, "INIT");
-        exit(0);
-    }
-    catch( const std::exception& e ) {
-        std::cerr << e.what() << std::endl;
-        exit(0);
-    }
-}
-
-std::unique_ptr<parse_tree::node> language::parseTRANSITIONprogram()
-{
-    std::fstream file;
-    file.open("programs/TRANSITION.txt", std::ios::in);
-
-    if(file.good() != true )
-    {
-        throw "Wrong TRANSITION program file";
-    }
-
-    std::string program;
-
-    while(!file.eof())
-    {
-        std::string line;
-        getline(file, line);
-        for(auto c: line)
-        {
-            if(!isspace(c))
-                program.push_back(c);
-        }
-    }
-    string_input inString(program, "TRANSITION program");
-    try {
-        auto root = parse_tree::parse< grammar, parse_tree::node, selector >( inString );
-        //parse_tree::print_dot( std::cout, *root );
-        return root;
-    }
-    catch( const parse_error& e ) {
-        printError(e, program, "TRANSITION");
-        exit(0);
-    }
-    catch( const std::exception& e ) {
-        std::cerr << e.what() << std::endl;
-        exit(0);
-    }
-}
-
-std::unique_ptr<parse_tree::node> language::parseCOLORprogram()
-{
-    std::fstream file;
-    file.open("programs/COLOR.txt", std::ios::in);
-
-    if(file.good() != true )
-    {
-        throw "Wrong COLOR program file";
-    }
-
-    std::string program;
-
-    while(!file.eof())
-    {
-        std::string line;
-        getline(file, line);
-        for(auto c: line)
-        {
-            if(!isspace(c))
-                program.push_back(c);
-        }
-    }
-    string_input inString(program, "COLOR program");
-    try {
-        auto root = parse_tree::parse< grammar, parse_tree::node, selector >( inString );
-        //parse_tree::print_dot( std::cout, *root );
-        return root;
-    }
-    catch( const parse_error& e ) {
-        printError(e, program, "COLOR");
+        printError(e, program, name);
         exit(0);
     }
     catch( const std::exception& e ) {

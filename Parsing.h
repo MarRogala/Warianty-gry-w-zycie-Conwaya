@@ -13,6 +13,8 @@
 
 using namespace TAO_PEGTL_NAMESPACE;
 
+void print_node( const parse_tree::node& n, const std::string& s = "");
+
 namespace inputFile {
 
     std::vector<std::vector<float>> parseInitData(std::string path);
@@ -68,10 +70,9 @@ namespace inputFile {
 
 namespace language
 {
-    std::string nodeToString(const std::string_view s);
-    std::unique_ptr<parse_tree::node> parseINITprogram();
-    std::unique_ptr<parse_tree::node> parseTRANSITIONprogram();
-    std::unique_ptr<parse_tree::node> parseCOLORprogram();
+    std::string nodeToString(std::string_view s);
+    std::string readFile(std::string path);
+    std::unique_ptr<parse_tree::node> parseProgram(std::string program, std::string name);
     void printError(parse_error e, std::string program, std::string name);
 
    // clang-format off
