@@ -13,7 +13,7 @@
 
 using namespace TAO_PEGTL_NAMESPACE;
 
-void print_node( const parse_tree::node& n, const std::string& s = "");
+void print_node(const parse_tree::node& n, std::string program);
 
 namespace inputFile {
 
@@ -70,7 +70,7 @@ namespace inputFile {
 
 namespace language
 {
-    std::string nodeToString(std::string_view s);
+    std::string nodeContent(const parse_tree::node& n, std::string program);
     std::string readFile(std::string path);
     std::unique_ptr<parse_tree::node> parseProgram(std::string program, std::string name);
     void printError(parse_error e, std::string program, std::string name);

@@ -21,6 +21,28 @@ void Game::setEnv(int field)
         state.push_back(board.fields[field].state[i]);
 }
 
+std::string Game::nodeContent(const parse_tree::node& n)
+{
+    auto begin = n.begin().column - 1;
+    auto end = n.end().column - 1;
+    int size = end - begin;
+
+    std::string s;
+    if(n.source == "INIT")
+    {
+        s = INITstring.substr(begin, size);
+    }
+    else if(n.source == "COLOR")
+    {
+        s = COLORstring.substr(begin, size);
+    }
+    else
+    {
+        s = TRANSITIONstring.substr(begin, size);
+    }
+    return s;
+}
+
 void Game::evaluateINITProgram()
 {
     if(INITprogram->is_root())
@@ -85,7 +107,7 @@ void Game::gameSetup()
 
     //print_dot(std::cout, *INITprogram);
     //print_dot( std::cout, *INITprogram);
-    //print_node(*INITprogram);
+    print_node(*INITprogram, INITstring);
     evaluateINITProgram();
 
     fileData = inputFile::parseInitData("input.txt");

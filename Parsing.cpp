@@ -2,17 +2,20 @@
 #include <fstream>
 #include <stdio.h>
 
-std::string language::nodeToString(std::string_view content)
+std::string language::nodeContent(const parse_tree::node& n, std::string program)
 {
+    auto begin = n.begin().column - 1;
+    auto end = n.end().column - 1;
     std::string s;
-    for(const auto c: content)
+    for(int i = begin; i < end; i ++)
     {
+        auto c = program[i];
         s.push_back(c);
     }
     return s;
 }
 
-void print_node( const parse_tree::node& n, const std::string& s)
+void print_node(const parse_tree::node& n, std::string program)
 {
     if( n.is_root() ) {
         std::cout << "ROOT" << std::endl;
@@ -20,16 +23,15 @@ void print_node( const parse_tree::node& n, const std::string& s)
     else {
         if( n.has_content() ) {
             std::cout << "type: " << n.type << " at: " << n.begin() << " to " << n.end() << "\n";
-            std::cout << "str: " << language::nodeToString(n.string_view()) << "\n";
+            std::cout << "str: " << language::nodeContent(n, program) << "\n";
         }
         else {
-            std::cout << s << n.type << " at " << n.begin() << std::endl;
+            std::cout << n.type << std::endl;
         }
     }
     if( !n.children.empty() ) {
-        const auto s2 = s + "  ";
         for( auto& up : n.children ) {
-            print_node( *up, s2 );
+            print_node(*up, program);
         }
     }
 }
