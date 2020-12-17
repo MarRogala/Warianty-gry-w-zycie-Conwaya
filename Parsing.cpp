@@ -94,7 +94,7 @@ std::unique_ptr<parse_tree::node> language::parseProgram(std::string program, st
     string_input inString(program, name);
     try {
         auto root = parse_tree::parse< grammar, parse_tree::node, selector >( inString );
-        //parse_tree::print_dot( std::cout, *root );
+        parse_tree::print_dot( std::cout, *root );
         return root;
     }
     catch( const parse_error& e ) {

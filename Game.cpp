@@ -14,11 +14,14 @@ void Game::clearEnv()
 void Game::setEnv(int field)
 {
     clearEnv();
+    color.resize(3, 0);
     color[0] = board.fields[field].color.r;
     color[1] = board.fields[field].color.g;
     color[2] = board.fields[field].color.b;
     for(unsigned int i = 0; i < board.fields[field].state.size(); i ++)
+    {
         state.push_back(board.fields[field].state[i]);
+    }
 }
 
 std::string Game::nodeContent(const parse_tree::node& n)
@@ -188,11 +191,14 @@ void Game::evalProgram(const parse_tree::node& n)
     if(n.type == "language::ifStatement")
     {
         float cond = getValue(*(n.children[0]));
-        for(auto& chld: n.children)
+        if(cond != 0.0)
         {
-            if(chld->type == "language::variable")
-                continue;
-            evalProgram(*chld);
+            for(auto& chld: n.children)
+            {
+                if(chld->type == "language::variable")
+                    continue;
+                evalProgram(*chld);
+            }
         }
     }
 }
@@ -209,6 +215,9 @@ void Game::evaluateCOLORProgram(int field)
 {
     setEnv(field);
     evalProgram(*COLORprogram);
+    board.fields[field].color.r = color[0];
+    board.fields[field].color.g = color[1];
+    board.fields[field].color.b = color[2];
 
 }
 
@@ -260,9 +269,8 @@ void Game::gameSetup()
     COLORprogram = language::parseProgram(COLORstring, "COLOR");
     TRANSITIONprogram = language::parseProgram(TRANSITIONstring, "TRANS");
 
-    //print_dot(std::cout, *INITprogram);
-    //print_dot( std::cout, *INITprogram);
-    //print_node(*INITprogram, INITstring);
+    //print_dot( std::cout, *COLORprogram);
+    //print_node(*COLORprogram, COLORstring);
     evaluateINITProgram();
 
     fileData = inputFile::parseInitData("input.txt");
@@ -272,35 +280,31 @@ void Game::gameSetup()
 
     for(unsigned int i = 0; i < board.fields.size(); i ++)
     {
-        if(board.fields[i].state[0] == 1)
-        {
-            candidates.push_back(i);
-            board.changeFieldColor(board.fields[i].fieldId, red);
-        }
-        else
-        {
-            board.changeFieldColor(board.fields[i].fieldId, white);
-        }
+        evaluateCOLORProgram(i);
+        board.changeFieldColor(board.fields[i].fieldId, board.fields[i].color);
     }
 }
 
 void Game::doStep()
 {
-    std::vector<int> tmp;
-    for(auto x: candidates)
+    int x; std::cin >> x;
+    std::unordered_set<int> newFields;
+    for(auto field: board.fields)
     {
-        for(auto u: board.fields[x].neighbours)
+        if(field.state[0] != 1.0)
+            continue;
+        for(auto u: field.neighbours)
         {
-            if(board.fields[u].state[0] == 0)
-            {
-                board.fields[u].state[0] = 1;
-                board.changeFieldColor(board.fields[u].fieldId, red);
-                tmp.push_back(u);
-            }
+            if(board.fields[u].state[0] == 1.0)
+                continue;
+            newFields.insert(u);
         }
     }
-    candidates.clear();
-    for(auto x: tmp)
-        candidates.push_back(x);
-    tmp.clear();
+    for(auto field: newFields)
+    {
+        board.fields[field].state[0] = 1.0;
+        evaluateCOLORProgram(field);
+        board.changeFieldColor(board.fields[field].fieldId, board.fields[field].color);
+    }
+    newFields.clear();
 }
