@@ -33,6 +33,11 @@ struct Game {
     void setEnv(int field);
     std::string nodeContent(const parse_tree::node& n);
 
+    float functionValue(const parse_tree::node& n);
+    float operatorValue(const parse_tree::node& n);
+    float getValue(const parse_tree::node& n);
+    void evalProgram(const parse_tree::node& n);
+
     void evaluateINITProgram();
     void evaluateCOLORProgram(int field);
     void evaluateTRANSITIONProgram(int field);

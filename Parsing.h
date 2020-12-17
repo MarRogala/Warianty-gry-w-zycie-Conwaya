@@ -127,8 +127,8 @@ namespace language
    struct equal : pad< string< '=', '=' >, space > {};
    struct andOp : pad< string< '&', '&' >, space > {};
    struct orOp : pad< string< '|', '|' >, space > {};
-   //struct lessEqual : pad< string< '<', '=' >, space > {};
-   //struct moreEqual : pad< string< '>', '=' >, space > {};
+   struct lessEqual : pad< string< '<', '=' >, space > {};
+   struct moreEqual : pad< string< '>', '=' >, space > {};
 
    struct expressionOperator : sor < plus, minus, multiply, divide, modulo, less, more, equal, andOp, orOp > {};
 
@@ -180,8 +180,8 @@ namespace language
          parse_tree::fold_one::on <
             expressionValue,
             simpleExpression,
-            ifStatement,
-            functionCall
+            functionCall,
+            ifStatement
         >,
          parse_tree::remove_content::on<
             assignment,

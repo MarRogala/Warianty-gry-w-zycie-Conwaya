@@ -43,6 +43,160 @@ std::string Game::nodeContent(const parse_tree::node& n)
     return s;
 }
 
+float Game::functionValue(const parse_tree::node& n)
+{
+    auto& firstArg = n.children[0];;
+    std::string functionName = nodeContent(*firstArg);
+
+    if(functionName == "neighbours")
+    {
+        int index = getValue(*(n.children[1]));
+        return board.fields[index].neighbours.size();
+    }
+    if(functionName == "count")
+    {
+        int field = getValue(*(n.children[1]));
+        int index = getValue(*(n.children[2]));
+        int value = getValue(*(n.children[3]));
+        int result = 0;
+        for(auto neig: board.fields[field].neighbours)
+        {
+            if(board.fields[neig].state[index] == value)
+                result ++;
+        }
+        return result;
+    }
+    if(functionName == "random")
+    {
+        int left = getValue(*(n.children[1]));
+        int right = getValue(*(n.children[2]));
+
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_real_distribution<double> dist(left, right);
+        return dist(mt);
+    }
+    return 1;
+}
+
+float Game::operatorValue(const parse_tree::node& n)
+{
+    auto& firstArg = n.children[0];
+    auto& secondArg = n.children[1];
+    auto& thirdArg = n.children[2];
+
+    float leftVal = getValue(*firstArg);
+    float rightVal = getValue(*thirdArg);
+
+    std::string op = nodeContent(*secondArg);
+
+    if(op == "language::plus")
+        return leftVal + rightVal;
+    if(op == "language::minus")
+        return leftVal + rightVal;
+    if(op == "language::multiply")
+        return leftVal * rightVal;
+    if(op == "language::divide")
+        return leftVal / rightVal;
+    if(op == "language::modulo")
+        return static_cast<int>(leftVal) % static_cast<int>(rightVal);
+    if(op == "language::less")
+        return leftVal < rightVal ? 1 : 0;
+    if(op == "language::more")
+        return leftVal > rightVal ? 1 : 0;
+    if(op == "language::lessEqual")
+        return leftVal <= rightVal ? 1 : 0;
+    if(op == "language::moreEqual")
+        return leftVal >= rightVal ? 1 : 0;
+    if(op == "language::equal")
+        return leftVal == rightVal;
+    if(op == "language::andOp")
+        return (leftVal != 0 && rightVal != 0) ? 1 : 0;
+    if(op == "language::orOp")
+        return (leftVal != 0 || rightVal != 0) ? 1 : 0;
+}
+
+float Game::getValue(const parse_tree::node& n)
+{
+    if(n.type == "language::variable")
+    {
+        std::string name = nodeContent(n);
+        if(variables.find(name) == variables.end())
+            return 0.0;
+        else return variables[name];
+    }
+    if(n.type == "language::integer" || n.type == "language::floatingPoint")
+    {
+        return std::stof(nodeContent(n));
+    }
+    if(n.type == "language::arrayVariable")
+    {
+        auto& nameNode = n.children[0];
+        auto& indexNode = n.children[1];
+        std::string name = nodeContent(*nameNode);
+        int index = static_cast<int>(getValue(*indexNode));
+        if(name == "color")
+            return color[index];
+        if(name == "state")
+            return state[index];
+    }
+    if(n.type == "language::function")
+    {
+        return functionValue(n);
+    }
+    if(n.type == "language::binaryExpression")
+    {
+        return operatorValue(n);
+    }
+}
+
+void Game::evalProgram(const parse_tree::node& n)
+{
+    if(n.is_root())
+    {
+        for(auto& ins: n.children)
+            evalProgram(*ins);
+        return;
+    }
+    if(n.type == "language::function")
+    {
+        int uselesVal = functionValue(n);
+    }
+    if(n.type == "language::assignment")
+    {
+        float value = getValue(*n.children[1]);
+        auto& dest = n.children[0];
+        if(dest->type == "language::variable")
+        {
+            std::string name;
+            name = nodeContent(*dest);
+            variables[name] = value;
+        }
+        if(dest->type == "language::arrayVariable")
+        {
+            std::string name;
+            int index;
+            name = nodeContent(*(dest->children[0]));
+            index = getValue(*(dest->children[1]));
+            if(name == "color")
+                color[index] = value;
+            if(name == "state")
+                state[index] = value;
+        }
+        return;
+    }
+    if(n.type == "language::ifStatement")
+    {
+        float cond = getValue(*(n.children[0]));
+        for(auto& chld: n.children)
+        {
+            if(chld->type == "language::variable")
+                continue;
+            evalProgram(*chld);
+        }
+    }
+}
+
 void Game::evaluateINITProgram()
 {
     if(INITprogram->is_root())
@@ -54,13 +208,14 @@ void Game::evaluateINITProgram()
 void Game::evaluateCOLORProgram(int field)
 {
     setEnv(field);
-
+    evalProgram(*COLORprogram);
 
 }
 
 void Game::evaluateTRANSITIONProgram(int field)
 {
     setEnv(field);
+    evalProgram(*TRANSITIONprogram);
 }
 
 void Game::loadData()
@@ -107,7 +262,7 @@ void Game::gameSetup()
 
     //print_dot(std::cout, *INITprogram);
     //print_dot( std::cout, *INITprogram);
-    print_node(*INITprogram, INITstring);
+    //print_node(*INITprogram, INITstring);
     evaluateINITProgram();
 
     fileData = inputFile::parseInitData("input.txt");
