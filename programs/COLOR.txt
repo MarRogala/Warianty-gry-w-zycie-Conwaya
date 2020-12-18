@@ -1,7 +1,0 @@
-st = state[0];
-if(st)
-{
-    color[0] = 1.0;
-    color[1] = 0.5;
-    color[2] = 0.0;
-}

@@ -2,6 +2,9 @@
 
 void Board::changeFieldColor(int fieldId, FieldColor color)
 {
+    if(!fields[fieldId].changeColor)
+        return;
+    fields[fieldId].changeColor = false;
     int index = fields[fieldId].fieldBufferOffset;
     glBindBuffer(GL_ARRAY_BUFFER, trianglesBuffer);
     float data[3] = {color.r, color.g, color.b};
@@ -16,7 +19,7 @@ void Board::changeFieldColor(int fieldId, FieldColor color)
     }
 }
 
-unsigned int Board::CompileShader(unsigned int type, std::string& source) // should be ok
+unsigned int Board::CompileShader(unsigned int type, std::string& source)
 {
     unsigned int id = glCreateShader(type);
     const char* src = source.c_str();
@@ -38,7 +41,7 @@ unsigned int Board::CompileShader(unsigned int type, std::string& source) // sho
     }
     return id;
 }
-unsigned int Board::CreateShader(std::string& vertexShader, std::string& fragmentShader) // should be ok
+unsigned int Board::CreateShader(std::string& vertexShader, std::string& fragmentShader)
 {
     unsigned int program = glCreateProgram();
     unsigned int vs = CompileShader(GL_VERTEX_SHADER, vertexShader);
@@ -61,8 +64,8 @@ void Board::createBuffers()
         linesSize += f.fieldEdges.size();
         trianglesSize += f.fieldPoints.size();
     }
-    lines = (float*)malloc(4 * linesSize * sizeof(float)); // start end
-    triangles = (float*)malloc(15 * trianglesSize * sizeof(float)); // state (color itp), 3 points
+    lines = (float*)malloc(4 * linesSize * sizeof(float));
+    triangles = (float*)malloc(15 * trianglesSize * sizeof(float));
 
     int linesIndex = 0;
     int trianglesIndex = 0;
@@ -229,15 +232,6 @@ void Board::fillFieldsCenters(int fieldsNumber)
         std::pair<double, double> center = {dist(mt), dist(mt)};
         fields.push_back(Field(i, center));
     }
-
-    /*fields.push_back(Field(0, {0.116759, -0.950588}));
-    fields.push_back(Field(1, {-0.458969, -0.830154}));
-    fields.push_back(Field(2, {-0.251897, 0.928944}));
-    fields.push_back(Field(3, {0.551897, 0.968944}));
-    //fields.push_back(Field(4, {-0.351897, 0.128944}));
-    fields.push_back(Field(4, {0.991897, 0.828944}));
-    //fields.push_back(Field(6, {0.011897, -0.928944}));
-    fields.push_back(Field(5, {0.581897, -0.938944}));*/
 }
 
 Board::Board() = default;

@@ -20,6 +20,7 @@ struct Field {
     std::vector<float> state;
     int fieldBufferOffset;
     FieldColor color = {1.0, 1.0, 1.0};
+    int changeColor = true;
     std::pair<double, double> fieldCenter;
     std::vector<Point> fieldPoints;
     std::vector<Edge> fieldEdges;
@@ -28,5 +29,4 @@ struct Field {
     Field(int id, std::pair<double, double> center);
     Field(int id, std::vector<Point> points);
     void sortPoints();
-    void print();
 };

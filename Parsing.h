@@ -130,7 +130,7 @@ namespace language
    struct lessEqual : pad< string< '<', '=' >, space > {};
    struct moreEqual : pad< string< '>', '=' >, space > {};
 
-   struct expressionOperator : sor < plus, minus, multiply, divide, modulo, less, more, equal, andOp, orOp > {};
+   struct expressionOperator : sor < plus, minus, multiply, divide, modulo, moreEqual, lessEqual, less, more, equal, andOp, orOp > {};
 
    struct binaryExpression : seq <
         expressionValue,
@@ -175,6 +175,7 @@ namespace language
             integer,
             variable,
             arrayVariable,
+            expressionOperator,
             floatingPoint
          >,
          parse_tree::fold_one::on <

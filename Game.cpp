@@ -7,17 +7,18 @@ void Game::clearEnv()
     state.clear();
     newState.clear();
     color.clear();
-    newColor.clear();
     variables.clear();
 }
 
 void Game::setEnv(int field)
 {
     clearEnv();
+    currentFieldId = field;
     color.resize(3, 0);
     color[0] = board.fields[field].color.r;
     color[1] = board.fields[field].color.g;
     color[2] = board.fields[field].color.b;
+    newState.resize(board.fields[field].state.size());
     for(unsigned int i = 0; i < board.fields[field].state.size(); i ++)
     {
         state.push_back(board.fields[field].state[i]);
@@ -53,16 +54,17 @@ float Game::functionValue(const parse_tree::node& n)
 
     if(functionName == "neighbours")
     {
+        // id
         int index = getValue(*(n.children[1]));
         return board.fields[index].neighbours.size();
     }
     if(functionName == "count")
     {
-        int field = getValue(*(n.children[1]));
-        int index = getValue(*(n.children[2]));
-        int value = getValue(*(n.children[3]));
+        // id, index, value
+        int index = getValue(*(n.children[1]));
+        int value = getValue(*(n.children[2]));
         int result = 0;
-        for(auto neig: board.fields[field].neighbours)
+        for(auto neig: board.fields[currentFieldId].neighbours)
         {
             if(board.fields[neig].state[index] == value)
                 result ++;
@@ -71,6 +73,7 @@ float Game::functionValue(const parse_tree::node& n)
     }
     if(functionName == "random")
     {
+        // random number [l, r]
         int left = getValue(*(n.children[1]));
         int right = getValue(*(n.children[2]));
 
@@ -93,29 +96,29 @@ float Game::operatorValue(const parse_tree::node& n)
 
     std::string op = nodeContent(*secondArg);
 
-    if(op == "language::plus")
+    if(op == "+")
         return leftVal + rightVal;
-    if(op == "language::minus")
+    if(op == "-")
         return leftVal + rightVal;
-    if(op == "language::multiply")
+    if(op == "*")
         return leftVal * rightVal;
-    if(op == "language::divide")
+    if(op == "/")
         return leftVal / rightVal;
-    if(op == "language::modulo")
+    if(op == "%")
         return static_cast<int>(leftVal) % static_cast<int>(rightVal);
-    if(op == "language::less")
+    if(op == "<")
         return leftVal < rightVal ? 1 : 0;
-    if(op == "language::more")
+    if(op == ">")
         return leftVal > rightVal ? 1 : 0;
-    if(op == "language::lessEqual")
+    if(op == "<=")
         return leftVal <= rightVal ? 1 : 0;
-    if(op == "language::moreEqual")
+    if(op == ">=")
         return leftVal >= rightVal ? 1 : 0;
-    if(op == "language::equal")
+    if(op == "==")
         return leftVal == rightVal;
-    if(op == "language::andOp")
+    if(op == "&&")
         return (leftVal != 0 && rightVal != 0) ? 1 : 0;
-    if(op == "language::orOp")
+    if(op == "||")
         return (leftVal != 0 || rightVal != 0) ? 1 : 0;
 }
 
@@ -126,7 +129,8 @@ float Game::getValue(const parse_tree::node& n)
         std::string name = nodeContent(n);
         if(variables.find(name) == variables.end())
             return 0.0;
-        else return variables[name];
+        else
+            return variables[name];
     }
     if(n.type == "language::integer" || n.type == "language::floatingPoint")
     {
@@ -185,6 +189,8 @@ void Game::evalProgram(const parse_tree::node& n)
                 color[index] = value;
             if(name == "state")
                 state[index] = value;
+            if(name == "newState")
+                newState[index] = value;
         }
         return;
     }
@@ -215,6 +221,12 @@ void Game::evaluateCOLORProgram(int field)
 {
     setEnv(field);
     evalProgram(*COLORprogram);
+    if(board.fields[field].color.r == color[0] && board.fields[field].color.g == color[1] && board.fields[field].color.b == color[2])
+    {
+        board.fields[field].changeColor = false;
+        return;
+    }
+    board.fields[field].changeColor = true;
     board.fields[field].color.r = color[0];
     board.fields[field].color.g = color[1];
     board.fields[field].color.b = color[2];
@@ -261,16 +273,14 @@ void Game::loadData()
 
 void Game::gameSetup()
 {
-    INITstring = language::readFile("programs/INIT.txt");
-    COLORstring = language::readFile("programs/COLOR.txt");
-    TRANSITIONstring = language::readFile("programs/TRANSITION.txt");
+    INITstring = language::readFile("programs/INIT.c");
+    COLORstring = language::readFile("programs/COLOR.c");
+    TRANSITIONstring = language::readFile("programs/TRANSITION.c");
 
     INITprogram = language::parseProgram(INITstring, "INIT");
     COLORprogram = language::parseProgram(COLORstring, "COLOR");
     TRANSITIONprogram = language::parseProgram(TRANSITIONstring, "TRANS");
 
-    //print_dot( std::cout, *COLORprogram);
-    //print_node(*COLORprogram, COLORstring);
     evaluateINITProgram();
 
     fileData = inputFile::parseInitData("input.txt");
@@ -288,23 +298,16 @@ void Game::gameSetup()
 void Game::doStep()
 {
     int x; std::cin >> x;
-    std::unordered_set<int> newFields;
-    for(auto field: board.fields)
+    std::vector<std::vector<float>> newStates;
+    for(int i = 0; i < board.fields.size(); i ++)
     {
-        if(field.state[0] != 1.0)
-            continue;
-        for(auto u: field.neighbours)
-        {
-            if(board.fields[u].state[0] == 1.0)
-                continue;
-            newFields.insert(u);
-        }
+        evaluateTRANSITIONProgram(i);
+        newStates.push_back(newState);
     }
-    for(auto field: newFields)
+    for(int i = 0; i < board.fields.size(); i ++)
     {
-        board.fields[field].state[0] = 1.0;
-        evaluateCOLORProgram(field);
-        board.changeFieldColor(board.fields[field].fieldId, board.fields[field].color);
+        board.fields[i].state = newStates[i];
+        evaluateCOLORProgram(i);
+        board.changeFieldColor(board.fields[i].fieldId, board.fields[i].color);
     }
-    newFields.clear();
 }

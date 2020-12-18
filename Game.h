@@ -9,9 +9,6 @@ typedef std::unique_ptr<nodeType> ptrType;
 
 struct Game {
 
-    FieldColor red = {1, 0, 0};
-    FieldColor white = {1, 1, 1};
-
     ptrType INITprogram;
     ptrType COLORprogram;
     ptrType TRANSITIONprogram;
@@ -20,8 +17,9 @@ struct Game {
 
     std::vector<std::vector<float>> fileData;
 
+    int currentFieldId;
     std::unordered_map<std::string, float> variables;
-    std::vector<float> color, newColor;
+    std::vector<float> color;
     std::vector<float> state, newState;
 
     void loadData();
