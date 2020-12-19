@@ -3,7 +3,9 @@
 ## Status
 Działający generator diagramów Woronoja. Poprawione rysowanie, używając glew.
 
-Działający parser podstawowego języka i pliku z początkowymi stanami.
+Działający parser języka opisu gry.
+Ewaluacja większości funkcji programów COLOR i TRANSITION.
+Pliki ```.csv``` jako wejście.
 
 ## Wymagane biblioteki
 1. glfw
