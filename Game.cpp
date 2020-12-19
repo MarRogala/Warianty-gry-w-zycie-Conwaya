@@ -23,6 +23,7 @@ void Game::setEnv(int field)
     {
         state.push_back(board.fields[field].state[i]);
     }
+    newState = state;
 }
 
 std::string Game::nodeContent(const parse_tree::node& n)
@@ -256,7 +257,7 @@ void Game::loadData(std::string fileName)
     std::getline(inputFile, line);
     std::stringstream lineStream(line);
 
-    std::cout << "Reading from input file: ";
+    std::cout << "Reading columns: ";
     int counter = 0;
     while(std::getline(lineStream, columnName, ','))
     {
@@ -271,7 +272,7 @@ void Game::loadData(std::string fileName)
         counter ++;
         std::cout << trimedName << ", ";
     }
-    std::cout << "\n";
+    std::cout << "from file " << fileName << "\n";
     if(counter < 3)
     {
         std::cerr << "To short lines in input file\n";
