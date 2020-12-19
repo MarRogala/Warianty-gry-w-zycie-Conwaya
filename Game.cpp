@@ -239,39 +239,97 @@ void Game::evaluateTRANSITIONProgram(int field)
     evalProgram(*TRANSITIONprogram);
 }
 
-void Game::loadData()
+void Game::loadData(std::string fileName)
 {
     std::random_device rd;
     std::mt19937 mt(rd());
     std::uniform_real_distribution<double> dist(-0.0001, 0.0001);
 
+    std::ifstream inputFile("./input/" + fileName);
+    if(!inputFile.is_open() || !inputFile.good())
+    {
+        std::cerr << "Input file is not open\n";
+        exit(1);
+    }
+
+    std::string line, columnName;
+    std::getline(inputFile, line);
+    std::stringstream lineStream(line);
+
+    std::cout << "Reading from input file: ";
+    int counter = 0;
+    while(std::getline(lineStream, columnName, ','))
+    {
+        std::string trimedName;
+        std::copy_if(
+            columnName.begin(), columnName.end(),
+            std::back_inserter(trimedName),
+            [](char c){
+                return !isspace(c);
+            }
+        );
+        counter ++;
+        std::cout << trimedName << ", ";
+    }
+    std::cout << "\n";
+    if(counter < 3)
+    {
+        std::cerr << "To short lines in input file\n";
+        exit(1);
+    }
+
+    std::string coma = ",";
+    while(std::getline(inputFile, line))
+    {
+        std::vector<float> lineData;
+        std::string value;
+
+        int pos = 0;
+        while ((pos = line.find(coma)) != std::string::npos)
+        {
+            value = line.substr(0, pos);
+            line.erase(0, pos + coma.length());
+            lineData.push_back(std::stof(value));
+        }
+        lineData.push_back(std::stof(line));
+        if(lineData.size() != counter)
+        {
+            std::cerr << "Wrong size of line in input file\n";
+            exit(1);
+        }
+        fileData.push_back(lineData);
+    }
+    inputFile.close();
+
     if(fileData.empty())
     {
         std::cerr << "Input file is empty!";
-        exit(0);
+        exit(1);
     }
+
     int lineSize = fileData[0].size();
     for(auto line: fileData)
     {
         if(line.size() != lineSize)
         {
             std::cerr << "Lines with wrong size in input file!";
-            exit(0);
+            exit(1);
         }
     }
-
     for(unsigned int i = 0; i < fileData.size(); i ++)
     {
         Field field = Field(i, {fileData[i][0], fileData[i][1] + dist(mt)});
+        //std::cout << "field: " << field.fieldCenter.first << " " << field.fieldCenter.second << "\n";
         for(unsigned int j = 2; j < fileData[i].size(); j ++)
         {
             field.state.push_back(fileData[i][j]);
         }
         board.fields.push_back(field);
     }
+    std::cout << "File loading is done\n";
 }
 
-void Game::gameSetup()
+void Game::gameSetup(std::string fileName)
 {
     INITstring = language::readFile("programs/INIT.c");
     COLORstring = language::readFile("programs/COLOR.c");
@@ -283,9 +341,7 @@ void Game::gameSetup()
 
     evaluateINITProgram();
 
-    fileData = inputFile::parseInitData("input.txt");
-
-    loadData();
+    loadData(fileName);
     board.generateVoronoi();
 
     for(unsigned int i = 0; i < board.fields.size(); i ++)
@@ -293,11 +349,12 @@ void Game::gameSetup()
         evaluateCOLORProgram(i);
         board.changeFieldColor(board.fields[i].fieldId, board.fields[i].color);
     }
+    std::cout << "Setup is done\n";
 }
 
 void Game::doStep()
 {
-    int x; std::cin >> x;
+    //int x; std::cin >> x;
     std::vector<std::vector<float>> newStates;
     for(int i = 0; i < board.fields.size(); i ++)
     {

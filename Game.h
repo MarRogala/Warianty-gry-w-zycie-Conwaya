@@ -3,6 +3,7 @@
 
 #include <unordered_set>
 #include <unordered_map>
+#include <fstream>
 
 typedef parse_tree::node nodeType;
 typedef std::unique_ptr<nodeType> ptrType;
@@ -22,8 +23,8 @@ struct Game {
     std::vector<float> color;
     std::vector<float> state, newState;
 
-    void loadData();
-    void gameSetup();
+    void loadData(std::string fileName);
+    void gameSetup(std::string fileName);
     void doStep();
 
     void clearEnv();

@@ -182,7 +182,6 @@ void Board::generateVoronoi()
     {
         Event e(field.fieldCenter.first, field.fieldCenter.second, field.fieldId);
         eventQueue.push(e);
-        std::cout << "E: " << field.fieldId << " " << field.fieldCenter.first << " " << field.fieldCenter.second << "\n";
     }
 
     while(!eventQueue.empty())
@@ -231,6 +230,7 @@ void Board::fillFieldsCenters(int fieldsNumber)
     {
         std::pair<double, double> center = {dist(mt), dist(mt)};
         fields.push_back(Field(i, center));
+        //std::cout << "field: " << fields.back().fieldId << " " << fields.back().fieldCenter.first << " " << fields.back().fieldCenter.second << "\n";
     }
 }
 
@@ -253,10 +253,4 @@ void Board::print()
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
     glUseProgram(lineShader);
     glDrawArrays(GL_LINES, 0, linesSize * 2);
-}
-
-void Board::neighbours(int v)
-{
-    fields[v].color = {1, 0, 0};
-    fields[v].state[0] = 1;
 }
