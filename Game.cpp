@@ -53,6 +53,18 @@ float Game::functionValue(const parse_tree::node& n)
     auto& firstArg = n.children[0];;
     std::string functionName = nodeContent(*firstArg);
 
+    if(functionName == "skip")
+    {
+        // index, value
+        int index = getValue(*(n.children[1]));
+        int value = getValue(*(n.children[2]));
+        if(state[index] == value)
+        {
+            toBeSkipped[currentFieldId] = true;
+            return -1.0;
+        }
+        else return 1.0;
+    }
     if(functionName == "neighbours")
     {
         // id
@@ -168,7 +180,9 @@ void Game::evalProgram(const parse_tree::node& n)
     }
     if(n.type == "language::function")
     {
-        int uselesVal = functionValue(n);
+        int value = functionValue(n);
+        if(value == -1.0)
+            return;
     }
     if(n.type == "language::assignment")
     {
@@ -345,6 +359,8 @@ void Game::gameSetup(std::string fileName)
     loadData(fileName);
     board.generateVoronoi();
 
+
+    toBeSkipped.resize(board.fields.size(), false);
     for(unsigned int i = 0; i < board.fields.size(); i ++)
     {
         evaluateCOLORProgram(i);
@@ -357,6 +373,7 @@ void Game::doStep()
 {
     //int x; std::cin >> x;
     std::vector<std::vector<float>> newStates;
+    toBeSkipped.resize(board.fields.size(), false);
     for(int i = 0; i < board.fields.size(); i ++)
     {
         evaluateTRANSITIONProgram(i);
@@ -364,6 +381,8 @@ void Game::doStep()
     }
     for(int i = 0; i < board.fields.size(); i ++)
     {
+        if(toBeSkipped[i])
+            continue;
         board.fields[i].state = newStates[i];
         evaluateCOLORProgram(i);
         board.changeFieldColor(board.fields[i].fieldId, board.fields[i].color);

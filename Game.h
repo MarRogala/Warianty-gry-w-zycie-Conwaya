@@ -22,7 +22,7 @@ struct Game {
     std::unordered_map<std::string, float> variables;
     std::vector<float> color;
     std::vector<float> state, newState;
-
+    std::vector<bool> toBeSkipped;
     void loadData(std::string fileName);
     void gameSetup(std::string fileName);
     void doStep();

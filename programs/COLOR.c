@@ -1,3 +1,4 @@
+skip(0, 1.0);
 st1 = state[0];
 st2 = state[1];
 
