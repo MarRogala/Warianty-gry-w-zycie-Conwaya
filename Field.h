@@ -11,7 +11,8 @@
 #include "Voronoi.h"
 
 struct FieldColor {
-    float r, g, b;
+    float r = 1.0, g = 1.0, b = 1.0;
+    FieldColor() = default;
     FieldColor(float R, float G, float B) : r(R), g(G), b(B) { }
 };
 
@@ -27,6 +28,7 @@ struct Field {
     std::vector<int> neighbours;
     Field();
     Field(int id, std::pair<double, double> center);
+    Field(int id, std::pair<double, double> center, FieldColor color);
     Field(int id, std::vector<Point> points);
     void sortPoints();
 };

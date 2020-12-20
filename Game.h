@@ -23,7 +23,8 @@ struct Game {
     std::mt19937 mt;
     float rndValue(float l, float r);
 
-    int currentFieldId;
+    FieldColor initColor;
+    int currentFieldId, stepsLimit = -1, stepsCounter = 0;
     std::unordered_map<std::string, float> variables;
     std::vector<float> color;
     std::vector<float> state, newState;

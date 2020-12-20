@@ -59,6 +59,18 @@ float Game::functionValue(const parse_tree::node& n)
     auto& firstArg = n.children[0];;
     std::string functionName = nodeContent(*firstArg);
 
+    if(functionName == "initialColor")
+    {
+        initColor.r = getValue(*(n.children[1]));
+        initColor.g = getValue(*(n.children[2]));
+        initColor.b = getValue(*(n.children[3]));
+        return 1.0;
+    }
+    if(functionName == "stepsLimit")
+    {
+        float value = getValue(*(n.children[1]));
+        stepsLimit = value;
+    }
     if(functionName == "skipCondition")
     {
         float value = getValue(*(n.children[1]));
@@ -239,10 +251,7 @@ void Game::evalProgram(const parse_tree::node& n)
 
 void Game::evaluateINITProgram()
 {
-    if(INITprogram->is_root())
-    {
-        // nothing to do here
-    }
+    evalProgram(*INITprogram);
 }
 
 void Game::evaluateCOLORProgram(int field)
@@ -346,7 +355,7 @@ void Game::loadData(std::string fileName)
     }
     for(unsigned int i = 0; i < fileData.size(); i ++)
     {
-        Field field = Field(i, {fileData[i][0], fileData[i][1] + dist(mt)});
+        Field field = Field(i, {fileData[i][0], fileData[i][1] + dist(mt)}, initColor);
         //std::cout << "field: " << field.fieldCenter.first << " " << field.fieldCenter.second << "\n";
         for(unsigned int j = 2; j < fileData[i].size(); j ++)
         {
@@ -385,6 +394,10 @@ void Game::gameSetup(std::string fileName)
 void Game::doStep()
 {
     //int x; std::cin >> x;
+    if(stepsLimit != -1 && stepsCounter > stepsLimit)
+        return;
+    stepsCounter ++;
+
     std::vector<std::vector<float>> newStates;
     toBeSkipped.resize(board.fields.size(), false);
     for(int i = 0; i < board.fields.size(); i ++)

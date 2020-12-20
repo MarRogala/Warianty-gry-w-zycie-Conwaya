@@ -5,6 +5,7 @@
 Field::Field() { }
 Field::Field(int id, std::vector<Point> points) : fieldId(id), fieldPoints(points) { }
 Field::Field(int id, std::pair<double, double> center) : fieldId(id), fieldCenter(center) { }
+Field::Field(int id, std::pair<double, double> center, FieldColor color) : fieldId(id), fieldCenter(center), color(color) { }
 
 inline bool operator<(const Point& lhs, const Point& rhs)
 {
