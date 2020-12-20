@@ -26,14 +26,15 @@ struct Game {
     FieldColor initColor;
     int currentFieldId, stepsLimit = -1, stepsCounter = 0;
     std::unordered_map<std::string, float> variables;
-    std::vector<float> color;
-    std::vector<float> state, newState;
+
+    std::vector<std::vector<float>> newStates;
+    std::vector<float> state, newState, color;
     std::vector<bool> toBeSkipped;
+
     void loadData(std::string fileName);
     void gameSetup(std::string fileName);
     void doStep();
 
-    void clearEnv();
     void setEnv(int field);
     std::string nodeContent(const parse_tree::node& n);
 

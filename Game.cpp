@@ -2,17 +2,9 @@
 
 Board board;
 
-void Game::clearEnv()
-{
-    state.clear();
-    newState.clear();
-    color.clear();
-    variables.clear();
-}
-
 void Game::setEnv(int field)
 {
-    clearEnv();
+    variables.clear();
     currentFieldId = field;
     color.resize(3, 0);
     color[0] = board.fields[field].color.r;
@@ -21,9 +13,9 @@ void Game::setEnv(int field)
     newState.resize(board.fields[field].state.size());
     for(unsigned int i = 0; i < board.fields[field].state.size(); i ++)
     {
-        state.push_back(board.fields[field].state[i]);
+        state[i] = board.fields[field].state[i];
+        newState[i] = board.fields[field].state[i];
     }
-    newState = state;
 }
 
 std::string Game::nodeContent(const parse_tree::node& n)
@@ -309,11 +301,16 @@ void Game::loadData(std::string fileName)
         std::cout << trimedName << ", ";
     }
     std::cout << "from file " << fileName << "\n";
+
     if(counter < 3)
     {
         std::cerr << "To short lines in input file\n";
         exit(1);
     }
+
+    color.resize(3, 0);
+    state.resize(counter - 2);
+    newState.resize(counter - 2);
 
     std::string coma = ",";
     while(std::getline(inputFile, line))
@@ -398,7 +395,7 @@ void Game::doStep()
         return;
     stepsCounter ++;
 
-    std::vector<std::vector<float>> newStates;
+    newStates.clear();
     toBeSkipped.resize(board.fields.size(), false);
     for(int i = 0; i < board.fields.size(); i ++)
     {
