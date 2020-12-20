@@ -51,6 +51,11 @@ float Game::functionValue(const parse_tree::node& n)
     auto& firstArg = n.children[0];;
     std::string functionName = nodeContent(*firstArg);
 
+    if(functionName == "printEvery")
+    {
+        printEvery =  getValue(*(n.children[1]));
+        return 1.0;
+    }
     if(functionName == "initialColor")
     {
         initColor.r = getValue(*(n.children[1]));
@@ -404,10 +409,13 @@ void Game::doStep()
     }
     for(int i = 0; i < board.fields.size(); i ++)
     {
-        if(toBeSkipped[i])
+        if(toBeSkipped[i] && printEvery == 1)
             continue;
         board.fields[i].state = newStates[i];
-        evaluateCOLORProgram(i);
-        board.changeFieldColor(board.fields[i].fieldId, board.fields[i].color);
+        if((stepsCounter % printEvery) == (printEvery - 1))
+        {
+            evaluateCOLORProgram(i);
+            board.changeFieldColor(board.fields[i].fieldId, board.fields[i].color);
+        }
     }
 }

@@ -52,7 +52,9 @@ int main(int argc, char **argv)
 
     while (!glfwWindowShouldClose(window))
     {
-        renderScene();
+        if(game.stepsCounter % game.printEvery == 0)
+            renderScene();
+
         game.doStep();
         glfwSwapBuffers(window);
         glfwPollEvents();

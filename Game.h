@@ -24,7 +24,7 @@ struct Game {
     float rndValue(float l, float r);
 
     FieldColor initColor;
-    int currentFieldId, stepsLimit = -1, stepsCounter = 0;
+    int currentFieldId, stepsLimit = -1, stepsCounter = 0, printEvery = 1;
     std::unordered_map<std::string, float> variables;
 
     std::vector<std::vector<float>> newStates;

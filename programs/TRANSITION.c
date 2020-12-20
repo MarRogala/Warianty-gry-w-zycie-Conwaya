@@ -2,7 +2,7 @@ skipState(0, 1.0);
 cnt = count(0, 1.0);
 cond1 = cnt > 0;
 rnd = random(0.0, 1.0);
-cond2 = rnd > 0.55;
+cond2 = rnd > 0.5;
 cond = cond1 && cond2;
 if(cond)
 {
