@@ -48,12 +48,28 @@ std::string Game::nodeContent(const parse_tree::node& n)
     return s;
 }
 
+float Game::rndValue(float l, float r)
+{
+    std::uniform_real_distribution<float> dist(0.0, 1.0);
+    return l + (abs(l - r) * dist(mt));
+}
+
 float Game::functionValue(const parse_tree::node& n)
 {
     auto& firstArg = n.children[0];;
     std::string functionName = nodeContent(*firstArg);
 
-    if(functionName == "skip")
+    if(functionName == "skipCondition")
+    {
+        float value = getValue(*(n.children[1]));
+        if(value != 0.0)
+        {
+            toBeSkipped[currentFieldId] = true;
+            return -1.0;
+        }
+        else return 1.0;
+    }
+    if(functionName == "skipState")
     {
         // index, value
         int index = getValue(*(n.children[1]));
@@ -90,10 +106,7 @@ float Game::functionValue(const parse_tree::node& n)
         int left = getValue(*(n.children[1]));
         int right = getValue(*(n.children[2]));
 
-        std::random_device rd;
-        std::mt19937 mt(rd());
-        std::uniform_real_distribution<double> dist(left, right);
-        return dist(mt);
+        return rndValue(left, right);
     }
     return 1;
 }

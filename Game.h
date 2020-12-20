@@ -10,6 +10,8 @@ typedef std::unique_ptr<nodeType> ptrType;
 
 struct Game {
 
+    Game() : mt(std::random_device()()) { }
+
     ptrType INITprogram;
     ptrType COLORprogram;
     ptrType TRANSITIONprogram;
@@ -17,6 +19,9 @@ struct Game {
     std::string INITstring, COLORstring, TRANSITIONstring;
 
     std::vector<std::vector<float>> fileData;
+
+    std::mt19937 mt;
+    float rndValue(float l, float r);
 
     int currentFieldId;
     std::unordered_map<std::string, float> variables;
