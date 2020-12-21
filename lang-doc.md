@@ -119,9 +119,21 @@ Komentarze dodane do obu programów nie są obsługiwane.
         // jeśli pole ma żywego sąsiada, zwiększ licznik o 1.
         newState[1] = state[1] + 1;
     }
+    if(state[1] > 20)
+    {
+        // jeśli pole powinno być żywe już 20 kroków, robi się martwe.
+        newState[1] = 0;
+        newState[0] = 0;
+    }
 
 ## Program COLOR
 
+    if(state[0] == 0)
+    {
+        // ustaw kolor martwego pola
+        color[0] = 1.0;
+        color[1] = 1.0;
+    }
     if(state[0])
     {
         // jeśli pole jest żywe zmień kolor (na błękitny)
