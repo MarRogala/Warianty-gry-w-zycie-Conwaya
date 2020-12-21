@@ -34,15 +34,14 @@ struct Game {
     void loadData(std::string fileName);
     void gameSetup(std::string fileName);
     void doStep();
-
-    void setEnv(int field);
+    void doParsing();
     std::string nodeContent(const parse_tree::node& n);
 
     float functionValue(const parse_tree::node& n);
     float operatorValue(const parse_tree::node& n);
     float getValue(const parse_tree::node& n);
     void evalProgram(const parse_tree::node& n);
-
+    void setEnv(int field);
     void evaluateINITProgram();
     void evaluateCOLORProgram(int field);
     void evaluateTRANSITIONProgram(int field);

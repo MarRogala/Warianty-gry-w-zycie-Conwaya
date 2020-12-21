@@ -215,7 +215,7 @@ void Board::generateVoronoi()
                 fields[i].neighbours.push_back(g);
             }
         }
-        createBuffers();
+        std::cout << "Generator finished\n";
         return;
     }
 }

@@ -20,6 +20,18 @@ void renderScene()
 
 int main(int argc, char **argv)
 {
+
+    std::string fileName;
+
+    if(argc == 1)
+        fileName = "input.csv";
+    if(argc == 2)
+        fileName = argv[1];
+
+    game.loadData(fileName);
+    board.generateVoronoi();
+    game.doParsing();
+
     GLFWwindow* window;
 
     if (!glfwInit())
@@ -39,16 +51,8 @@ int main(int argc, char **argv)
     if(glewInit() != GLEW_OK)
         std::cout << "GLEW INIT ERROR\n";
 
-    glClearColor(0.0, 0.0, 0.0, 0.0);
-
-    if(argc == 1)
-    {
-        game.gameSetup("input.csv");
-    }
-    if(argc == 2)
-    {
-        game.gameSetup(argv[1]);
-    }
+    board.createBuffers();
+    game.gameSetup(fileName);
 
     while (!glfwWindowShouldClose(window))
     {
