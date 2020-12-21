@@ -79,13 +79,21 @@ namespace language
 
    struct expressionOperator : sor < plus, minus, multiply, divide, modulo, moreEqual, lessEqual, less, more, equal, andOp, orOp > {};
 
+   struct binaryExpressionInBracket;
+
    struct binaryExpression : seq <
-        expressionValue,
+        sor < expressionValue, binaryExpressionInBracket >,
         expressionOperator,
-        expressionValue
+        sor < expressionValue, binaryExpressionInBracket >
    > {};
 
-   struct simpleExpression : sor < binaryExpression, expressionValue > {};
+   struct binaryExpressionInBracket : seq <
+        one < '(' >,
+        binaryExpression,
+        one < ')' >
+   > {};
+
+   struct simpleExpression : sor < binaryExpression, expressionValue, binaryExpressionInBracket> {};
 
    struct assignment : seq <
         sor < arrayVariable, variable >,
@@ -97,7 +105,7 @@ namespace language
    struct ifStatement : seq <
         string< 'i', 'f' >,
         one< '(' >,
-        variable,
+        simpleExpression,
         one< ')' >,
         one< '{' >,
         star< assignment >,
@@ -129,6 +137,7 @@ namespace language
             expressionValue,
             simpleExpression,
             functionCall,
+            binaryExpressionInBracket,
             ifStatement
         >,
          parse_tree::remove_content::on<
