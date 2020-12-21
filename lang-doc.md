@@ -22,6 +22,7 @@ wyrażenie prymitywne lub wyrażenie binarne w nawiasie --> operator --> wyraże
 Wyrażenie to wyrażenie binarne lub wyrażenie prymitywne.
 
 Przykłady wyrażeń:
+
     1. varName
     2. 100
     3. 100.52
@@ -49,6 +50,7 @@ Wywołanie funkcji nie będące częścią wyrażenia kończy się średnikiem.
 Przypisanie możemy wykonywać do zmiennej lub jednej z trzech zmiennych tablicowych. Wartością przypisania może być dowolne wyrażenie.
 
 Przykłady:
+
     - var = 1.0;
     - state[1] = 1 + (1 * 2);
     - color[0] = (var + state[1]) + 10.5;
@@ -128,7 +130,7 @@ Komentarze dodane do obu programów nie są obsługiwane.
     }
     if((state[1] > 0) && (state[0] == 0))
     {
-        //jeśli pole powinno być żywe, ale nie jest zmień kolor (na fioletowy)
+        //jeśli pole powinno być żywe ale nie jest, zmień kolor (na fioletowy)
         color[0] = 0.9;
         color[1] = 0.0;
     }
