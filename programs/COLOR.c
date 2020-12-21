@@ -1,4 +1,3 @@
-skipState(0, 1.0);
 if(state[0])
 {
     color[0] = 0.1;

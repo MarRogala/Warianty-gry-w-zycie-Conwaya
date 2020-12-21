@@ -51,21 +51,16 @@ float Game::functionValue(const parse_tree::node& n)
     auto& firstArg = n.children[0];;
     std::string functionName = nodeContent(*firstArg);
 
-    if(functionName == "skipCondition")
-    {
-        float value = getValue(*(n.children[1]));
-        if(value != 0.0)
-        {
-            toBeSkipped[currentFieldId] = true;
-            return -1.0;
-        }
-        else return 1.0;
-    }
-    else if(functionName == "skipState")
+    if(functionName == "skipState")
     {
         // index, value
         int index = getValue(*(n.children[1]));
         int value = getValue(*(n.children[2]));
+        if(index >= state.size())
+        {
+            std::cerr << "state index out of bound\n";
+            exit(1);
+        }
         if(state[index] == value)
         {
             toBeSkipped[currentFieldId] = true;
@@ -73,17 +68,16 @@ float Game::functionValue(const parse_tree::node& n)
         }
         else return 1.0;
     }
-    else if(functionName == "neighbours")
-    {
-        // id
-        int index = getValue(*(n.children[1]));
-        return board.fields[index].neighbours.size();
-    }
     else if(functionName == "count")
     {
         // id, index, value
         int index = getValue(*(n.children[1]));
         int value = getValue(*(n.children[2]));
+        if(index >= state.size())
+        {
+            std::cerr << "state index out of bound\n";
+            exit(1);
+        }
         int result = 0;
         for(auto neig: board.fields[currentFieldId].neighbours)
         {
@@ -191,9 +185,23 @@ float Game::getValue(const parse_tree::node& n)
         std::string name = nodeContent(*nameNode);
         int index = static_cast<int>(getValue(*indexNode));
         if(name == "color")
+        {
+            if(index > 2)
+            {
+                std::cerr << "color index out of bound\n";
+                exit(1);
+            }
             return color[index];
+        }
         if(name == "state")
+        {
+            if(index > state.size())
+            {
+                std::cerr << "state index out of bound\n";
+                exit(1);
+            }
             return state[index];
+        }
     }
     else if(n.type == "language::function")
     {
@@ -224,11 +232,26 @@ void Game::evalProgram(const parse_tree::node& n)
             name = nodeContent(*(dest->children[0]));
             index = getValue(*(dest->children[1]));
             if(name == "color")
+            {
+                if(index > 2)
+                {
+                    std::cerr << "color index out of bound\n";
+                    exit(1);
+                }
                 color[index] = value;
-            if(name == "state")
-                state[index] = value;
-            if(name == "newState")
-                newState[index] = value;
+            }
+            else
+            {
+                if(index > state.size())
+                {
+                    std::cerr << "state or newState index out of bound\n";
+                    exit(1);
+                }
+                if(name == "state")
+                    state[index] = value;
+                else if(name == "newState")
+                    newState[index] = value;
+            }
         }
         return;
     }
