@@ -228,7 +228,28 @@ Linia brzegowa -- \textit{Beachline}, jest najważniejszą strukturą całego al
 	\item \textit{Edge} -- reprezentuje ukończona krawędź.
 \end{itemize}
 
+\section{Złożoność}
+Obsługa każdego wydarzenia typu \textit{site event} dodaje dwie nowe krawędzie oraz dwie nowe parabole do linii brzegowej. Załóżmy, że każda parabola ma przypisane wydarzenie typu \textit{circle event}. Obsługa wydarzenia \textit{circle event} zmniejsza liczbę parabol oraz krawędzi. Oznacza to, że dla $n$ pól diagramu w linii brzegowej będzie $O(n)$ elementów oraz w $eventQueue$ będzie $O(n)$ wydarzeń. Ze względu, na złożoność wyszukiwania parabol w linii brzegowej -- $O(n)$, złożoność całego algorytmu to $O(n^2)$. Możliwe jest osiągnięcie złożoności $O(nlog(n)$, przez zastosowanie zbalansowanego drzewa binarnego do przechowywania elementów linii brzegowej.
+
+
 \section{Inne algorytmy}
+
+\subsection{Algorytm dziel i zwyciężaj}
+
+Innym podejściem do generowania diagramów Woronoja jest zastosowanie techniki dziel i zwyciężaj. Podczas każdego kroku algorytmu dzielimy zbiór, z którego generujemy diagram na dwa równe, rozłączne podzbiory. Po rekurencyjnym wywołaniu algorytmu i wygenerowaniu diagramu dla mniejszych zbiorów, wynikowe diagramy są ze sobą łączone. Złożoność takiego algorytmu to $O(nlogn)$.
+
+\subsection{Algorytm inkrementacyjny}
+
+W tym podejściu do gotowego diagramu Woronoja dodajmemy kolejno nowe punkty, aktualizując istniejący diagram. Początkowo dla jednego punktu diagramem jest ciała płaszczyzna. Złożoność algorytmu to $O(n^2)$.
+
+\subsection{Triangulacja Delone}
+
+\begin{definition}
+Triangulacja Delone zbioru $P$ oznaczana jako $DP(P)$ to taka triangulacja, że żaden punkt $p \in P$ nie leży w środku okręgu opisanego na dowolnym trójkącie należącym do $DP(P)$. 
+\end{definition}
+
+Algorytmy wyznaczające triangulację Delone działają w złożoności $O(nlogn)$.
+Korzystając z wyznaczonej triangulacji można w łatwy sposób uzyskać diagram Woronoja, łącząc punkty okręgów opisanych na trójkątach. 
 
 \chapter{Język opisu gry}
 \section{Główne programy}
