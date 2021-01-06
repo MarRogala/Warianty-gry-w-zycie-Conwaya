@@ -13,7 +13,7 @@
 \advisorgen    {dr hab. Jan Otopa}
 
 
-\usepackage{amsmath,amsthm,natbib, caption, mathtools,amsfonts,graphicx,hyperref}
+\usepackage{amsmath,amsthm,natbib, caption, mathtools,amsfonts,graphicx,hyperref,listings}
 \usepackage[ruled,vlined]{algorithm2e}
 
 \graphicspath{ {./images/} }
@@ -228,7 +228,7 @@ Linia brzegowa -- \textit{Beachline}, jest najważniejszą strukturą całego al
 	\item \textit{Edge} -- reprezentuje ukończona krawędź.
 \end{itemize}
 
-\section{Złożoność}
+\subsection{Złożoność}
 Obsługa każdego wydarzenia typu \textit{site event} dodaje dwie nowe krawędzie oraz dwie nowe parabole do linii brzegowej. Załóżmy, że każda parabola ma przypisane wydarzenie typu \textit{circle event}. Obsługa wydarzenia \textit{circle event} zmniejsza liczbę parabol oraz krawędzi. Oznacza to, że dla $n$ pól diagramu w linii brzegowej będzie $O(n)$ elementów oraz w $eventQueue$ będzie $O(n)$ wydarzeń. Ze względu, na złożoność wyszukiwania parabol w linii brzegowej -- $O(n)$, złożoność całego algorytmu to $O(n^2)$. Możliwe jest osiągnięcie złożoności $O(nlog(n)$, przez zastosowanie zbalansowanego drzewa binarnego do przechowywania elementów linii brzegowej.
 
 
@@ -252,8 +252,136 @@ Algorytmy wyznaczające triangulację Delone działają w złożoności $O(nlogn
 Korzystając z wyznaczonej triangulacji można w łatwy sposób uzyskać diagram Woronoja, łącząc punkty okręgów opisanych na trójkątach. 
 
 \chapter{Język opisu gry}
-\section{Główne programy}
+Standardową grę w życie można opisać w bardzo prosty sposób. Potrzebne są nam informacje o tym, kiedy komórka pozostaje żywa i kiedy ożywa, będąc wcześniej martwa. Możemy z tego wywnioskować, kiedy komórka umiera, co daje nam komplet niezbędnych reguł. Zasady przedstawiamy według następującej konwencji:
+\begin{itemize}
+\item na początku podajemy liczby żywych sąsiadów, dla których komórka pozostaje żywa
+\item następnie po ukośniku podajemy liczby żywych sąsiadów, dla których komórka ożywa, będąc wcześniej martwa
+\end{itemize}
+
+Podane liczby są mniejsze lub równe $8$, przez co nie ma potrzeby w żaden sposób ich oddzielać.
+
+\begin{example}
+$23/3$ to opis zasad gry w życie zaproponowanej przez Conwaya.
+\end{example}
+
+Niestety, nieregularność diagramów Woronoja oraz bardziej rozbudowany stan komórek nie pozwala na opisywanie gry w tak prosty sposób. W omawianym projekcie użytkownik definiuje zasady, przy użyciu prostego języka, którego składnia przypomina składnię języka $C$. Takie rozwiązanie pozwala na wykonywanie bardziej skomplikowanych obliczeń podczas przechodzenia między stanami oraz obsługę stanów będących krotkami liczb rzeczywistych, co pozwala na przechowywanie większej ilości informacji o komórce. Użytkownik definiuje także sposób w jaki komórka będzie wyświetlana. Korzystając z bieżącego stanu określamy jej kolorowanie w postaci \textit{RGB}.
+
+Do zdefiniowania zasad, użytkownik powinien napisać trzy programy. 
+\begin{itemize}
+\item program \textit{INIT} -- określa początkowe parametry gry. Wywoływany jest tylko raz, przed rozpoczęciem symulacji.
+\item program \textit{TRANSITION} -- określa w jaki sposób komórka zmienia swój stan. Wywoływany dla wszystkich komórek podczas każdego kroku gry.
+\item program \textit{COLOR} -- określa kolor danego pola, korzystając z jego stanu. Wywoływany dla wszystkich komórek podczas każdego kroku gry, po wykonaniu programu \textit{TRANSITION}.
+\end{itemize}
+
+Symulacja gry w życie przebiega w następujący sposób.
+
+\begin{algorithm}[H]
+\SetAlgoLined
+	Ustaw początkowe parametry, wykonując program \textit{INIT}\\
+ \While{licznik kroków jest mniejszy od limitu kroków}{
+ 	\For{każda komórka}{
+ 		\textit{TRANSITION} \\
+ 		\textit{COLOR}	
+ 	}
+ }
+ \caption{Pseudokod algorytmu}
+\end{algorithm}
+
+\section{Dane początkowe}
+Dane do programu przekazujemy w pliku o rozszerzeniu \textit{.csv}. Pierwszy wiersz pliku zawiera nie będące liczbami nazwy kolumn. Kolejne wiersze zawierają początkowe informacje o komórkach. Pierwsze dwie kolumny każdego wiersza, opisują współrzędne punktów służących do generowania diagramu Woronoja.  Współrzędne muszą zawierać się w przedziale $[-1, 1]$. Kolejne kolumny zawierające dowolne liczby rzeczywiste opisują początkowy stan komórek. Liczba podanych kolumn definiuje rozmiar stanu komórek.
+
 \section{Konstrukcje językowe}
+
+\subsection{Zmienne}
+\begin{itemize}
+\item zmienne standardowe -- przechowują liczby typu rzeczywistego. Nazwy zmiennych tworzone są, tak jak w języku $C$. Użytkownik nie deklaruje zmiennych, a zmienna bez przypisanej wartości ma domyślnie wartość $0$.
+\item zmienne tablicowe -- przechowują informacje o kolorze i stanie komórek. Dostęp do wartości zmiennych tablicowych wykonujemy przez operator $[]$, do którego podajemy liczby naturalne z przedziału $[0, n)$, gdzie $n$ to rozmiar tablicy. Podczas wykonywania napisanych przez użytkownika programów mamy dostęp do następujących zmiennych tablicowych: 
+	\begin{itemize}
+	\item \textit{color} - tablica o rozmiarze $3$, trzymająca kolor komórki (RGB), wyznaczony ze stanu w programie \textit{COLOR}. 
+	\item \textit{state} -- tablica z której odczytujemy aktualny stan komórki.
+	\item \textit{newState} -- tablica do której zapisujemy wyliczony nowy stan komórki.
+	\end{itemize}
+\end{itemize}
+Użytkownik nie może wykorzystywać innych niż podane zmiennych tablicowych. Rozmiar zmiennych \textit{state, newState} zależy od dostarczonych do programu danych początkowych. 
+
+\subsection{Wywołanie funkcji}
+Wywołanie funkcji ma następującą formę:
+\begin{align}
+nazwaFunkcji(argumenty oddzielone przecinkami)
+\end{align}
+
+Argumentami funkcji mogą być liczby rzeczywiste lub naturalne. Wywołanie funkcji może być osobną instrukcją programu (wtedy wartość zwracana przez funkcję jest ignorowana) lub częścią wyrażenia.
+Podczas pisania programów, użytkownik ma do dyspozycji przygotowane wcześniej następujące funkcje:
+\begin{itemize}
+\item \textit{count(index, value)} -- zwraca liczbę sąsiadów komórki, których stan spełnia \textit{state[index] == value}.
+\item \textit{random(l, r)} -- zwraca losową liczbę rzeczywistą z przedziału $[l, r]$. Funkcja korzysta z rozkładu jednostajnego.
+\item \textit{stepsLimit(limit)} -- ustawia limit kroków do wykonania. Wartość $-1$ oznacza nieskończoność.
+\item \textit{initialColor(r, g, b)} -- ustawia początkowy kolor komórek.
+\item \textit{printEvery(value)} -- ustawia co ile kroków wygląd planszy jest aktualizowany.
+\item \textit{skipState(index, value)} -- przerywa wykonywanie programu \textit{TRANSITION} jeśli zachodzi \textit{state[index] == value}. Dla tego pola pominięte zostanie też wykonanie programu \textit{COLOR}.
+\end{itemize}
+
+Jeśli wywołanie funkcji nie jest częścią wyrażenia, musi być zakończone średnikiem.
+
+\subsection{Wyrażenia}
+W prezentowanym języku dostępne są operatory binarne: $+, -, * , /, \%, <, >, <=, >=, ==, \&\&, ||$.
+Operatory logiczne zwracają wartości $1$ i $0$, oznaczające odpowiednio prawdę i fałsz.
+Wyrażeniami mogą być następujące konstrukcje:
+\begin{itemize}
+\item liczba rzeczywista lub naturalna
+\item wywołanie funkcji
+\item zmienna lub dostęp do zmiennej tablicowej
+\item operator binarny
+\end{itemize}
+Argumentami operatora binarnego mogą być dowolne wyrażenia. Jeśli argumentem operatora binarnego jest inny operator binarny, taki argument musi znajdować się w nawiasach.
+
+\begin{example}
+Przykładowe poprawne i błędne wyrażenia:
+\begin{itemize}
+\item $varName$ -- poprawne wyrażenie 
+\item $1 + varName$ -- poprawne wyrażenie
+\item $1.0 + (state[1] + varName)$ -- poprawne wyrażenie
+\item $1 + 2 * 4$ -- błędne wyrażenie
+\end{itemize}
+\end{example}
+
+\section{Przypisania}
+Wyrażenia możemy przypisywać do zmiennych oraz dostępnych zmiennych tablicowych. Przypisanie musi być zakończone średnikiem.
+
+\begin{example}
+Przykładowe poprawne przypisania:
+\begin{itemize}
+\item $varName = (1 + varName2) * (10 - varName\_3);$
+\item $color[2] = 0.5;$
+\end{itemize}
+\end{example}
+
+\section{Instrukcje warunkowe}
+Warunkiem instrukcji $if$, może być dowolne wyrażenie. Blok instrukcji, które zostaną wykonane, jeśli warunek zostanie spełniony, może składać się tylko z instrukcji przypisania i musi być otoczony nawiasami $\{, \}$. Warunek jest spełniony, jeśli wartość wyrażenia jest różna od $0$.
+
+\begin{example}
+Przykładowe poprawne przypisania:
+\begin{center}
+\begin{lstlisting}
+if((condVar + 1) == 0)
+{
+	someVar = 2.0;
+	newState[0] = 0;
+}
+\end{lstlisting}
+\end{center}
+\end{example}
+
+\section{Opis głównych programów}
+
+\subsection{\textit{INIT}}
+Program \textit{INIT} jest miejscem, gdzie przy użyciu funkcji \textit{printEvery, stepsLimit, initialColor} ustawiane są początkowe parametry symulacji.
+
+\subsection{\textit{TRANSITION}}
+Program \textit{TRANSITION} służy do definiowania zasad zmiany stanów komórek. Aktualny stan odczytujemy ze zmiennej \textit{state}, która jest automatycznie ustawiana na wartości stanu każdej komórki. Wyliczony stan, który będzie aktualny w następnym kroku symulacji zapisujemy do zmiennej \textit{newState}. Domyślnie wartości zmiennej \textit{newState} są takie same jak te w zmiennej \textit{state}.
+
+\subsection{\textit{COLOR}}
+Program \textit{COLOR} służy do wyliczania koloru komórek. Korzystając ze zmiennej \textit{state}, wyliczany jest kolor w postaci RGB, który musi zostać zapisany do zmiennej \textit{color}. 
 
 \chapter{Parser}
 
