@@ -383,7 +383,34 @@ Program \textit{TRANSITION} służy do definiowania zasad zmiany stanów komóre
 \subsection{\textit{COLOR}}
 Program \textit{COLOR} służy do wyliczania koloru komórek. Korzystając ze zmiennej \textit{state}, wyliczany jest kolor w postaci RGB, który musi zostać zapisany do zmiennej \textit{color}. 
 
-\chapter{Parser}
+\chapter{Parsowanie i ewaluacja programów}
+
+\section{Wykorzystanie biblioteki PEGTL}
+PEGTL to biblioteka pozwalająca na pisanie parserów, dostępna pod licencją MIT. Pozwala ona na proste zdefiniowanie gramatyki języka opisu zasad gry. Przetworzony program przechowywany jest w postaci abstrakcyjnego drzewa rozbioru, wykorzystując dostarczoną w tym celu strukturę. 
+
+Funkcje parsujące oraz definicja gramatyki znajdują się w plikach \textit{Parsing.h} oraz \textit{Parsing.cpp}. 
+
+\section{Gramatyka}
+
+Biblioteka PEGTL pozwala na tworzenie gramatyk przy użyciu prostych reguł:
+\begin{itemize}
+\item one -- dopasowuje pojedynczy znak.
+\item string -- dopasowuje ciąg znaków.
+\item seq  -- dopasowuje ciąg zasad.
+\item star -- dopasowuje dowolnie długi ciąg jednej reguły.
+\item plus -- dopasowuje jedno lub więcej wystąpienie reguły.
+\item opt  -- opcjonalne dopasowanie reguły.
+\item sor -- wybór pierwszej pasującej reguły w kolejności od lewej.
+\end{itemize}
+
+Wszystkie pozostałe dostępne reguły są kombinacjami podanych wyżej. Po zdefiniowaniu gramatyki, jako wejście parsera przekazywany jest ciąg znaków wczytany z plików w katalogu \textit{programs}. Z wczytanych programów usuwane są wszystkie białe znaki, co powoduje, że użytkownik może z nich dowolnie korzystać podczas pisania programów.
+
+\section{Ewaluacja programów}
+Po uzyskaniu abstrakcyjnych drzew rozbiorów programów \textit{INIT, TRANSITION, COLOR}, zostaną one ewaluowane w strukturze \textit{Game}, która odpowiedzialna jest za wykonywanie symulacji. Progra, \textit{INIT} ewaluowany jest jednokrotnie, przed rozpoczęciem symulacji. \textit{COLOR} i \textit{TRANSITION} ewaluowane są wielokrotnie, ze zmiennymi tablicowymi ustawionymi na dane odpowiadające aktualnie przetwarzanej komórce diagramu. 
+
+Wyrażenia ewaluowane są rekurencyjnie, w sposób gorliwy. Oznacza to, że lewa strona wyrażenia jest wyliczana w całości, przed wyliczeniem prawej strony. Nazwy użytych w programach zmiennych przechowywane są w kontenerze \textit{variable} będącym \textit{unoredered\_map}, ze standardowej biblioteki języka \textit{C++}. Wszystkie przypisane do zmiennych wartości są czyszczone po wykonaniu każdego programu \textit{COLOR} i \textit{TRANSITION}.
+
+\chapter{Wizualizacja}
 
 \chapter{Przykłady użycia}
 \chapter{Inne narzędzia}
