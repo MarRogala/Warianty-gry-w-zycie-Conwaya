@@ -360,7 +360,7 @@ Przykładowe poprawne przypisania:
 Warunkiem instrukcji $if$, może być dowolne wyrażenie. Blok instrukcji, które zostaną wykonane, jeśli warunek zostanie spełniony, może składać się tylko z instrukcji przypisania i musi być otoczony nawiasami $\{, \}$. Warunek jest spełniony, jeśli wartość wyrażenia jest różna od $0$.
 
 \begin{example}
-Przykładowe poprawne przypisania:
+Przykładowa poprawna instrukcja warunkowa:
 \begin{center}
 \begin{lstlisting}
 if((condVar + 1) == 0)
@@ -412,14 +412,94 @@ Wyrażenia ewaluowane są rekurencyjnie, w sposób gorliwy. Oznacza to, że lewa
 
 \chapter{Wizualizacja}
 
-\chapter{Przykłady użycia}
-\chapter{Inne narzędzia}
-\section{Golly}
-\subsection{Opis}
-\subsection{Algorytm}
-\section{PlayGameOfLife}
+Wizualizacja symulacji odbywa się przy użyciu OpenGL API. Wyświetlanie obrazu podzielone jest na dwie części: wyświetlanie krawędzi wielokątów oraz kolorowanie wielokątów. Dane do wyświetlania ładowane są w funkcji \textit{createbuffers} struktury \textit{Board}, a za aktualizowanie wyglądu planszy, po wykonaniu kroku symulacji, odpowiedzialna  jest funkcja \textit{print}. Dane wyświetlenia przekazywane są do OpenGl'a przez obiekty \textit{vertex buffer} -- VBO.
 
-%\nocite{}
+\section{Wyświetlanie krawędzi}
+
+Krawędzie przekazywane są jako dwa punkty, będące ich końcami. Po zakończeniu generowania diagramu, krawędzie nie są nigdy modyfikowane, dlatego wyświetlane są tylko raz na początku wizualizacji. Za wygląd krawędzi odpowiadają dwa proste shadery. 
+
+\subsection{Vertex shader}
+Podstawowy shader ustalający pozycję końców krawędzi.
+\begin{center}
+\begin{lstlisting}
+layout(location = 0) in vec4 position;
+void main()
+{
+	gl_Position = position;
+}
+\end{lstlisting}
+\end{center}
+
+\subsection{Fragment shader}
+Shader wyświetlający ciało krawędzi w czarnym kolorze.
+\begin{center}
+\begin{lstlisting}
+precision mediump float;
+out mediump vec4 color1;
+void main()
+{
+	color1 = vec4(0.0, 0.0, 0.0, 1.0);
+}
+\end{lstlisting}
+\end{center}
+
+\section{Kolorowanie pól diagramu}
+
+Pola diagramów będące wielokątami wypukłymi podzielone zostały na trójkąty. Wierzchołkami każdego z trójkątów są dwa końce jednej z krawędzi oraz punkt będący centrum danego pola. Wielokąt przekazywany jest do VBO jako zbiór trójkątów. Każdy trójkąt reprezentowany jest przez trzy punkty razem z ich kolorami. Kolor pola wyznaczany jest przez OpenGl jako interpolacja kolorów wierzchołków figury. Podanie wszystkich punktów wielokąta w jednakowym kolorze powoduje jednolity kolor całego pola. Podczas trwania symulacji kolory pól ulegają zmianie. W takim przypadku w VBO zmieniany jest kolor tylko jednego wielokąta, z wykorzystaniem funkcji \textit{glBufferSubData}.
+
+\subsection{Vertex shader}
+Shader ustalający pozycję wierzchołków trójkąta oraz ustawiający ich kolor.
+\begin{center}
+\begin{lstlisting}
+layout(location = 0) in vec4 position;
+layout(location = 1) in vec3 colorIn1;
+precision mediump float;
+out mediump vec4 color2;
+void main()
+{
+	gl_Position = position;
+	color2 = vec4(colorIn1, 1.0);
+}
+\end{lstlisting}
+\end{center}
+
+\newpage
+
+\subsection{Fragment shader}
+Shader wyświetlający ciało trójkąta w kolorze będącym interpolacją kolorów wierzchołków.
+\begin{center}
+\begin{lstlisting}
+precision mediump float;
+in mediump vec4 color2;
+out mediump vec4 color3;
+void main()
+{
+	color3 = color2;
+}
+\end{lstlisting}
+\end{center}
+
+\chapter{Inne narzędzia}
+Gra w życie zyskała dużą popularność. Od czasu jej publikacji powstało wiele narzędzi pozwalających przeprowadzać symulację różnych jej wariantów. Znaleźć można zarówno bardzo proste, interaktywne narzędzia pozwalające na przedstawienie podstawowych zasad działania gry oraz zaprezentowanie zachodzących zjawisk takich jak oscylatory, jak i zaawansowane programy naukowe, które wykonują tysiące kroków na sekundę i pozwalają w prawie dowolny sposób modyfikować zasady gry.
+\section{PlayGameOfLife}
+Jest to narzędzie symulujące podstawową grę w życie przedstawioną przez Conwaya. Dane wprowadzane są przez użytkownika ręcznie, zaznaczając żywe pola na interaktywnej planszy. Symulację przeprowadzamy online, pod adresem \url{https://playgameoflife.com/}. Dodatkowe możliwości:
+\begin{itemize}
+\item modyfikacja planszy w trakcie trwania symulacji
+\item zatrzymywanie symulacji i wykonywanie pojedynczych kroków
+\item zmiana odstępu czasowego pomiędzy krokami
+\end{itemize}
+
+\section{Golly}
+Golly \cite{golly}, to narzędzie stworzone do symulacji automatów komórkowych. Skrypty obsługujące symulację są pisane w językach \textit{Python} lub \textit{Lua}. Dzięki zastosowaniu algorytmu \textit{hashlife} \cite{hashlife}, Golly jest w stanie przetwarzać duże struktury składające się z milionów komórek. Przykładami pokazującymi możliwości tego narzędzia są zaimplementowane przy jego użyciu systemu komputerowe wykorzystujące równoważność gry w życie z maszyną Turinga.
+
+Golly dostarcza także duża bibliotekę przykładowych gier w życie, prezentujących jej najciekawsze zachowania.
+
+
+\subsection{Algorytm hashlife}
+Algorytm wykorzystuje ważną własność automatów podobnych do gry w życie. Nawet pozornie losowe struktury automatów komórkowych, mogą zamienić~w~się zbiór oscylatorów i niezmiennych fragmentów. Plansza reprezentowana jest przez drzewo, którego wierzchołki mają dokładnie czterech synów. Algorytm zapamiętuje, w jaki sposób wykonywane są dane wzorce ułożeń komórek. Wykorzystując technikę hashowania, powtarzające się wzorce w drzewie są wyliczane są tylko raz, co~pozwala ograniczyć niezbędne obliczenia. Istotnymi minusami, są wykorzystywana przez algorytm pamięć oraz początkowy czas działania, niezbędny do zgromadzenia danych o symulacji.
+
+
+\nocite{woronoj}
 \bibliographystyle{plain}
 \bibliography{bibliography}
 
