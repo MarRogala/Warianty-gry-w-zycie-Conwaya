@@ -4,7 +4,7 @@
 
 \polishtitle    {Warianty gry w życie Conwaya}
 \englishtitle   {Conway's Game of Life variants}
-\polishabstract {Przedstawiona praca opisuje implementację projektu, umożliwiającego tworzenie i wizualizację wariantów gry w życie Conwaya opartych na planszy zbudowanej na podstawie diagramów Woronoja. Części składowe projektu to generator diagramów Woronoja oparty na algorytmie S. Fortune'a, wizualizacja gry przy zastosowaniu API OpenGl oraz ewaluator języka opisu gry.}
+\polishabstract {Przedstawiona praca opisuje implementację projektu, umożliwiającego tworzenie i wizualizację wariantów gry w życie Conwaya opartych na planszy zbudowanej na podstawie diagramów Woronoja. Części składowe projektu to generator diagramów Woronoja oparty na algorytmie S. Fortunea, wizualizacja gry przy zastosowaniu API OpenGl oraz ewaluator języka opisu gry.}
 \englishabstract{This paper describes the project, which alowes, creation and visualization of Conway's Game of Life variants, on a a board made of Voronoi diagrams. Project consist of Voronoi diagrams generator using S. Fortune's algoritm, game visualisation using OpenGl API and game description language evaluator.}
 \author         {Marcin Rogala}
 \advisor        {dr hab. Jan Otop}
@@ -28,21 +28,21 @@
 
 \chapter{Wprowadzenie}
 \section{Gra w życie}
-Gra w życie, została zaprezentowana w 1970 roku przez Johna Conwaya.  Jest to gra bez graczy co oznacza, że jej ewolucja zależy tylko od stanu początkowego bez późniejszych ingerencji człowieka. Planszą jest dwu wymiarowa siatka kwadratowych komórek, z których każda ma 8 sąsiadów. Każda komórka może być żywa lub martwa. W standardowej grze obowiązują tylko trzy reguły:
+Gra w życie, została zaprezentowana w 1970 roku przez Johna Conwaya.  Jest~to~gra bez graczy, co oznacza, że jej ewolucja zależy tylko od stanu początkowego bez późniejszych ingerencji człowieka. Planszą jest dwu wymiarowa siatka kwadratowych komórek, z których każda ma 8 sąsiadów. Każda komórka może być żywa lub martwa. W standardowej grze obowiązują tylko trzy reguły:
 
 \begin{itemize}
-\item martwa komórka rodzi jeśli ma dokładnie 3 żywych sąsiadów.
-\item żywa komórka umiera z zatłoczenia, jeśli ma więcej niż 3 żywych sąsiadów
-\item żywa komórka umiera z samotności jeśli ma mniej niż 2 żywych sąsiadów
+\item martwa komórka rodzi jeśli ma dokładnie 3 żywych sąsiadów,
+\item żywa komórka umiera z zatłoczenia, jeśli ma więcej niż 3 żywych sąsiadów,
+\item żywa komórka umiera z samotności jeśli ma mniej niż 2 żywych sąsiadów.
 \end{itemize}
 
 Przedstawione przez Conwaya proste zasady pozwoliły zachować równowagę pomiędzy rozrostem i zanikaniem struktur.
 
 Gra w życie ma wiele ciekawych właściwości. Jedną z nich jest równoważność maszynie Turinga, co oznacza, że ma takie same możliwości obliczeniowe jak komputer z nieskończoną pamięcią i brakiem ograniczeń czasowych. Przy użyciu gry~w~życie możliwa jest konstrukcja bramek logicznych oraz implementacja różnych systemów komputerowych. Gra może przebiegać chaotycznie lub według jednego z ustalonych wzorców: 
 \begin{itemize}
-	\item stabilny -- pozostają niezmienne bez względu na kolejne przekształcenia
-	\item oscylatory -- zmieniają się cyklicznie, regularnie wracają do poprzednich stanów
-	\item statki -- oscylatory zmieniające swoją pozycję na planszy
+	\item stabilny -- pozostają niezmienne bez względu na kolejne przekształcenia,
+	\item oscylatory -- zmieniają się cyklicznie, regularnie wracają do poprzednich stanów,
+	\item statki -- oscylatory zmieniające swoją pozycję na planszy.
 \end{itemize}
 
 Gra Conwaya jest przykładem automatu komórkowego, które często wykorzystywane są do przeprowadzania symulacji komputerowych. 
@@ -50,20 +50,20 @@ Max Brenner w swoim artykule \cite{brenner} przedstawił symulację rozprzestrze
 
 \section{Opis projektu}
 
-Przedstawiona praca opisuje projekt pozwalający na definiowanie zasad gry w życie używając prostego języka. Gra odbywa się na planszy będącej diagramem Woronoja, co istotnie narusza jedną z właściwości automatów komórkowych, mianowicie komórki automatu różnią się od siebie. Pozwala to wprowadzić element nieregularności oraz upodabnia grę do prawdziwego życia, w którym elementy symulacji mają istotne różnice wynikające se swojej budowy lub środowiska.
+Przedstawiona praca opisuje projekt pozwalający na definiowanie zasad gry~w~życie, używając prostego języka. Gra odbywa się na planszy będącej diagramem Woronoja, co istotnie narusza jedną z właściwości automatów komórkowych, mianowicie komórki automatu różnią się od siebie. Pozwala to wprowadzić element nieregularności oraz upodabnia grę do prawdziwego życia, w którym elementy symulacji mają istotne różnice wynikające se swojej budowy lub środowiska.
 Weźmy za przykład ludzi, którzy mają różną liczbę osób w swoim otoczeniu, co wpływa na wiarygodność symulacji przeprowadzonych na standardowej siatce kwadratów.
 
-Pierwszą częścią pracy jest przedstawienie algorytmu Fortune pozwalającego na generowanie diagramów Woronoja. Algorytm przyjmuje na wejściu zbiór punktów oraz opierając się na technice zamiatania generuje na ich podstawie diagram.
-Algorytm Fortune rozpatruje względem współrzędnej $y$ następujące wydarzenia:
+Pierwszą częścią pracy jest przedstawienie algorytmu Fortunea pozwalającego na generowanie diagramów Woronoja. Algorytm przyjmuje na wejściu zbiór punktów oraz opierając się na technice zamiatania, generuje na ich podstawie diagram.
+Algorytm Fortunea rozpatruje względem współrzędnej $y$ następujące wydarzenia:
 \begin{itemize}
-	\item site event - miotła napotyka kolejny punkt z wejściowego zbioru
+	\item site event - miotła napotyka kolejny punkt z wejściowego zbioru,
 	\item circle event - miotła napotyka wydarzenie będące niwelacją jednej z paraboli wykorzystywanej do wyznaczania krawędzi diagramu.
 \end{itemize}
 Po rozpatrzeniu wszystkich wydarzeń wynikiem działania algorytmu są krawędzie oraz graf sąsiedztwa pól diagramu Woronoja.
 
 Drugą częścią pracy jest opis gramatyki oraz mechanizmu prasowania i ewaluacji języka opisu gry. Parser tworzonych przez użytkowników programów wykorzystuje bibliotekę PEGTL, która opiera się na gramatycę PEG oraz parsowaniu z góry na dół. Wynikiem parsowania jest abstrakcyjne drzewo rozkładu języka, które jest następnie ewaluowane do odpowiednich funkcji opisujących grę w życie.
 
-Kolejna część, to opis wykorzystania API OpenGl do przeprowadzenia wizualizacji gry.
+Kolejna część to opis wykorzystania API OpenGl do przeprowadzenia wizualizacji gry.
 
 Pracę uzupełnia opis istniejących narzędzi i algorytmów do przeprowadzania symulacji z użyciem gry w życie.
 
@@ -95,14 +95,14 @@ Jednym ze sposobów  generowania diagramów Woronoja jest algorytm zaproponowany
 \textit{Miotłą} nazywamy poziomą linię poruszającą się od dołu do góry planszy. Wszystkie punkty poniżej miotły zostały już rozpatrzone przez algorytm, natomiast punkty powyżej miotły zostaną rozpatrzone, gdy miotła dojdzie do ich wysokości.
 \end{definition}
 
-Najważniejszą strukturą algorytmu jest towarzysząca miotle linia brzegowa. Składa się ona z parabol, rozpinających się na rozpatrzonymi przez miotłę punktami oraz nieukończonych krawędzi diagramu. W czasie trwania algorytmu parabole rozszerzają się, a ich przecięcia wyznaczają krawędzie. Parabola, która tworzy pole z centrum $p = (x_p, y_p)$ jest zbiorem $\{ x \quad | \quad x \in \mathbb{R}^2 \land dist(p, x) = dist(p_s, x) \}$, gdzie przez $p_s$ oznaczamy punkt na miotle znajdujący się najbliżej $x$. 
+Najważniejszą strukturą algorytmu jest towarzysząca miotle linia brzegowa. Składa się ona z parabol, rozpinających się nad rozpatrzonymi przez miotłę punktami oraz nieukończonych krawędzi diagramu. W czasie trwania algorytmu parabole rozszerzają się, a ich przecięcia wyznaczają krawędzie. Parabola, która tworzy pole z centrum $p = (x_p, y_p)$ jest zbiorem $\{ x \quad | \quad x \in \mathbb{R}^2 \land dist(p, x) = dist(p_s, x) \}$, gdzie przez $p_s$ oznaczamy punkt na miotle znajdujący się najbliżej $x$. 
 
 \begin{remark}
 Punkt przecięcia sąsiednich parabol jest równo odległy od centrów, które definiują te parabole.
 \end{remark}
 
 Wyznaczymy wzór $f(x)$ parabol znajdujących się w linii brzegowej.
-Niech $y_s$ oznacza wysokość, na której znajduje się miotła, a $(x_c, y_c)$ będzie centrum pola, które tworzy parabola. 
+Niech~$y_s$~oznacza wysokość, na której znajduje się miotła, a $(x_c, y_c)$ będzie centrum pola, które tworzy parabola. 
 
 \begin{align*}
 	dist((x_c, y_c), (x, f(x))) &= dist((x, y_s) (x, f(x))) \\
@@ -126,7 +126,7 @@ Poruszająca się przez planszę miotła napotyka dwa rodzaje wydarzeń.
 
 \subsubsection{Site event -- obsługa}
 \label{sec:site}
-Napotykając nowe centrum, musimy dodać do linii brzegowej nową parabolę, dzieląc jedną z istniejących na dwie części. W tym celu przeszukujemy linię brzegową poszukując paraboli leżącej bezpośrednio pod nowym centrum. To przeszukiwanie będzie miało kluczowy wpływ na złożoność algorytmu. 
+Napotykając nowe centrum, musimy dodać do linii brzegowej nową parabolę, dzieląc jedną z istniejących na dwie części. W tym celu przeszukujemy linię brzegową, poszukując paraboli leżącej bezpośrednio pod nowym centrum. To przeszukiwanie będzie miało kluczowy wpływ na złożoność algorytmu. 
 
 \begin{example}
 	Zmienione elementy linii brzegowej po obsłużeniu nowego centrum.
@@ -142,11 +142,11 @@ Odnaleziona parabola zostaję zastąpiona ciągiem elementów:
 \end{align}
 Gdzie $P1, P3$ to kopie rozdzielanej paraboli. $P2$ to nowa parabola utworzona przez dodawane centrum. $K1, K2$ to nowe krawędzie rozszerzające się w przeciwnych kierunkach. Punktem startowym dodawanych krawędzi jest punkt na rozdzielanej paraboli znajdujący się pod nowym centrum.
 
-Pozostaje sprawdzić, czy parabole, które dodaliśmy do linii brzegowej zostaną kiedyś zniwelowane i czy konieczne jest dodanie odpowiednich wydarzeń. 
-Parabola zostanie zniwelowana przez swoich sąsiadów jeśli zachodzą dwa warunki:
+Pozostaje sprawdzić, czy parabole, które dodaliśmy do linii brzegowej, zostaną kiedyś zniwelowane i czy konieczne jest dodanie odpowiednich wydarzeń. 
+Parabola zostanie zniwelowana przez swoich sąsiadów, jeśli zachodzą dwa warunki:
 \begin{itemize}
-	\item parabola nie jest skrajnie lewym lub skrajnie prawym elementem linii brzegowej
-	\item krawędzie (półproste) będące sąsiadami paraboli, przecinają się
+	\item parabola nie jest skrajnie lewym lub skrajnie prawym elementem linii brzegowej,
+	\item krawędzie (półproste) będące sąsiadami paraboli, przecinają się.
 \end{itemize}
 Aby dodać nowe wydarzenie polegające na ściśnięciu paraboli przez jej sąsiadów, musimy poznać jego współrzędną $y$. 
 Weźmy ciąg elementów linii brzegowej:
@@ -154,7 +154,7 @@ Weźmy ciąg elementów linii brzegowej:
 	P1, K1, P2, K2, P3
 \end{align}
 Punkt $p_i = (x_i, y_i)$ będący punktem przecięcia krawędzi $K1$ i $K2$ jest też miejscem przecięcia parabol $P1$ i $P3$, co czyni $y_i$
-wysokością na której $P2$ zostanie ściśnięte przez $P1$ i $P3$. W tym momencie $p_i$ będzie równo odległe od centrów parabol $P1, P2, P3$. Centra te będą leżały na okręgu o środku $p_i$, skąd wzięła się nazwa wydarzenia.
+wysokością, na której $P2$ zostanie ściśnięte przez $P1$ i $P3$. W tym momencie $p_i$ będzie równo odległe od centrów parabol $P1, P2, P3$. Centra te będą leżały na okręgu o środku $p_i$, skąd wzięła się nazwa wydarzenia.
 
 
 \subsubsection{Circle event -- obsługa}
@@ -196,14 +196,14 @@ Poniższy pseudokod pokazuje, bardzo uproszczony sposób rozpatrywania wydarzeń
 \end{algorithm}
 
 \subsubsection{Linia brzegowa}
-Linia brzegowa -- \textit{Beachline}, jest najważniejszą strukturą całego algorytmu. Zawiera ona listę struktur \textit{BeachlineField}, przechowującą elementy znajdujące się w linii brzegowej. Wszystkie funkcje, których złożoność nie została określona, działają ze stałą złożonością. Najważniejsze funkcje \textit{Beachline} to:
+Linia brzegowa -- \textit{Beachline}, jest najważniejszą strukturą całego algorytmu. Zawiera ona listę struktur \textit{BeachlineField}, przechowującą elementy znajdujące się~w~linii brzegowej. Wszystkie funkcje, których złożoność nie została określona, działają ze stałą złożonością. Najważniejsze funkcje \textit{Beachline} to:
 
 \begin{itemize}
-\item \textit{findParabolaForNewSite} -- wyszukująca parabolę z linii brzegowej, która znajduje się bezpośrednio pod nowym centrum. Funkcja oblicza przecięcia parabol, z ich sąsiadami co pozwala poznać przedział na jakim się one znajdują. Złożoność tej funkcji to $O(n)$, gdzie $n$ to rozmiar linii brzegowej.
+\item \textit{findParabolaForNewSite} -- funkcja wyszukująca parabolę z linii brzegowej, która znajduje się bezpośrednio pod nowym centrum. Funkcja oblicza przecięcia parabol, z ich sąsiadami co pozwala poznać przedział, na jakim się one znajdują. Złożoność tej funkcji to $O(n)$, gdzie $n$ to rozmiar linii brzegowej.
 
-\item \textit{handleSiteEvent} -- wykonująca niezbędne operacje opisane w \hyperref[sec:site]{Site event -- obsługa}. Złożoność tej funkcji to $O(n)$, gdzie $n$ to rozmiar linii brzegowej.
+\item \textit{handleSiteEvent} -- funkcja wykonująca niezbędne operacje opisane w \hyperref[sec:site]{Site event -- obsługa}. Złożoność tej funkcji to $O(n)$, gdzie $n$ to rozmiar linii brzegowej.
 
-\item \textit{handleCircleEvent} -- wykonująca niezbędne operacje opisane w \hyperref[sec:circle]{Circle event -- obsługa}.
+\item \textit{handleCircleEvent} -- funkcja wykonująca niezbędne operacje opisane w \hyperref[sec:circle]{Circle event -- obsługa}.
 
 \item \textit{addCircleEvents} -- funkcja dodająca niezbędne wydarzenia typu \textit{circle event}, dla nowych elementów linii brzegowej.
 \end{itemize}
@@ -211,20 +211,20 @@ Linia brzegowa -- \textit{Beachline}, jest najważniejszą strukturą całego al
 \textit{Beachline} zawiera dużo funkcji pomocniczych, pomagających obsługiwać wydarzenia oraz wykonywać niezbędne obliczenia na parabolach i krawędziach. Niektóre z tych funkcji to:
 
 \begin{itemize}
-\item \textit{addNewField} -- funkcja dodająca nowy element do linii brzegowej.
-\item \textit{removeField} -- funkcja usuwająca element z linii brzegowej.
-\item \textit{parabolaHalfEdgeIntersection} -- funkcja wyznaczająca punkt przecięcia paraboli z półprostą.
-\item \textit{edgesIntersection} -- funkcja wyznaczająca przecięcie półprostych.
-\item \textit{completePolygons} -- funkcja czyszcząca linię brzegową po zakończonej pracy oraz oznaczająca ostatnie krawędzie jako zakończone. Złożoność tej funkcji to $O(n)$, gdzie $n$ to rozmiar linii brzegowej.
+\item \textit{addNewField} -- funkcja dodająca nowy element do linii brzegowej,
+\item \textit{removeField} -- funkcja usuwająca element z linii brzegowej,
+\item \textit{parabolaHalfEdgeIntersection} -- funkcja wyznaczająca punkt przecięcia paraboli z półprostą,
+\item \textit{edgesIntersection} -- funkcja wyznaczająca przecięcie półprostych,
+\item \textit{completePolygons} -- funkcja czyszcząca linię brzegową po zakończonej pracy oraz oznaczająca ostatnie krawędzie jako zakończone. Złożoność tej funkcji~to~$O(n)$, gdzie~$n$~to~rozmiar linii brzegowej.
 \end{itemize}
 
 \textit{Beachline} przechowuje także wynikowe krawędzie algorytmu oraz uzyskany graf połączeń pól diagramu.
 
 \subsubsection{Pozostałe struktury}
 \begin{itemize}
-	\item \textit{Event} -- przechowuje informacje dotyczące wydarzeń przechowywanych w~\textit{eventQueue}.
-	\item \textit{Parabola} -- reprezentuje parabolę przechowywaną w linii brzegowej.
-	\item \textit{HalfEdge} -- reprezentuję nieukończoną krawędź (półprostą), która rozszerza się w trakcie trwania algorytmu.
+	\item \textit{Event} -- przechowuje informacje dotyczące wydarzeń przechowywanych w~\textit{eventQueue},
+	\item \textit{Parabola} -- reprezentuje parabolę przechowywaną w linii brzegowej,
+	\item \textit{HalfEdge} -- reprezentuję nieukończoną krawędź (półprostą), która rozszerza~się~w~trakcie trwania algorytmu,
 	\item \textit{Edge} -- reprezentuje ukończona krawędź.
 \end{itemize}
 
@@ -236,7 +236,7 @@ Obsługa każdego wydarzenia typu \textit{site event} dodaje dwie nowe krawędzi
 
 \subsection{Algorytm dziel i zwyciężaj}
 
-Innym podejściem do generowania diagramów Woronoja jest zastosowanie techniki dziel i zwyciężaj. Podczas każdego kroku algorytmu dzielimy zbiór, z którego generujemy diagram na dwa równe, rozłączne podzbiory. Po rekurencyjnym wywołaniu algorytmu i wygenerowaniu diagramu dla mniejszych zbiorów, wynikowe diagramy są ze sobą łączone. Złożoność takiego algorytmu to $O(nlogn)$.
+Innym podejściem do generowania diagramów Woronoja jest zastosowanie techniki dziel i zwyciężaj. Podczas każdego kroku algorytmu dzielimy zbiór, z którego generujemy diagram na dwa równe, rozłączne podzbiory. Po rekurencyjnym wywołaniu algorytmu i wygenerowaniu diagramu dla mniejszych zbiorów wynikowe diagramy są ze sobą łączone. Złożoność takiego algorytmu to $O(nlogn)$.
 
 \subsection{Algorytm inkrementacyjny}
 
@@ -249,13 +249,13 @@ Triangulacja Delone zbioru $P$ oznaczana jako $DP(P)$ to taka triangulacja, że 
 \end{definition}
 
 Algorytmy wyznaczające triangulację Delone działają w złożoności $O(nlogn)$.
-Korzystając z wyznaczonej triangulacji można w łatwy sposób uzyskać diagram Woronoja, łącząc punkty okręgów opisanych na trójkątach. 
+Korzystając z wyznaczonej triangulacji, można w łatwy sposób uzyskać diagram Woronoja, łącząc punkty okręgów opisanych na trójkątach. 
 
 \chapter{Język opisu gry}
-Standardową grę w życie można opisać w bardzo prosty sposób. Potrzebne są nam informacje o tym, kiedy komórka pozostaje żywa i kiedy ożywa, będąc wcześniej martwa. Możemy z tego wywnioskować, kiedy komórka umiera, co daje nam komplet niezbędnych reguł. Zasady przedstawiamy według następującej konwencji:
+Standardową grę w życie można opisać w bardzo prosty sposób. Potrzebne~są~nam informacje o tym, kiedy komórka pozostaje żywa i kiedy ożywa, będąc wcześniej martwa. Możemy z tego wywnioskować, kiedy komórka umiera, co daje nam komplet niezbędnych reguł. Zasady przedstawiamy według następującej konwencji:
 \begin{itemize}
-\item na początku podajemy liczby żywych sąsiadów, dla których komórka pozostaje żywa
-\item następnie po ukośniku podajemy liczby żywych sąsiadów, dla których komórka ożywa, będąc wcześniej martwa
+\item na początku podajemy liczby żywych sąsiadów, dla których komórka pozostaje żywa,
+\item następnie po ukośniku podajemy liczby żywych sąsiadów, dla których komórka ożywa, będąc wcześniej martwa.
 \end{itemize}
 
 Podane liczby są mniejsze lub równe $8$, przez co nie ma potrzeby w żaden sposób ich oddzielać.
@@ -264,12 +264,12 @@ Podane liczby są mniejsze lub równe $8$, przez co nie ma potrzeby w żaden spo
 $23/3$ to opis zasad gry w życie zaproponowanej przez Conwaya.
 \end{example}
 
-Niestety, nieregularność diagramów Woronoja oraz bardziej rozbudowany stan komórek nie pozwala na opisywanie gry w tak prosty sposób. W omawianym projekcie użytkownik definiuje zasady, przy użyciu prostego języka, którego składnia przypomina składnię języka $C$. Takie rozwiązanie pozwala na wykonywanie bardziej skomplikowanych obliczeń podczas przechodzenia między stanami oraz obsługę stanów będących krotkami liczb rzeczywistych, co pozwala na przechowywanie większej ilości informacji o komórce. Użytkownik definiuje także sposób w jaki komórka będzie wyświetlana. Korzystając z bieżącego stanu określamy jej kolorowanie w postaci \textit{RGB}.
+Niestety, nieregularność diagramów Woronoja oraz bardziej rozbudowany stan komórek nie pozwala na opisywanie gry w tak prosty sposób. W omawianym projekcie użytkownik definiuje zasady, przy użyciu prostego języka, którego składnia przypomina składnię języka $C$. Takie rozwiązanie pozwala na wykonywanie bardziej skomplikowanych obliczeń podczas przechodzenia między stanami oraz obsługę stanów będących krotkami liczb rzeczywistych, co pozwala na przechowywanie większej ilości informacji o komórce. Użytkownik definiuje także sposób w jaki komórka będzie wyświetlana. Korzystając z bieżącego stanu, określamy jej kolorowanie w postaci \textit{RGB}.
 
 Do zdefiniowania zasad, użytkownik powinien napisać trzy programy. 
 \begin{itemize}
-\item program \textit{INIT} -- określa początkowe parametry gry. Wywoływany jest tylko raz, przed rozpoczęciem symulacji.
-\item program \textit{TRANSITION} -- określa w jaki sposób komórka zmienia swój stan. Wywoływany dla wszystkich komórek podczas każdego kroku gry.
+\item program \textit{INIT} -- określa początkowe parametry gry. Wywoływany jest tylko raz, przed rozpoczęciem symulacji,
+\item program \textit{TRANSITION} -- określa w jaki sposób komórka zmienia swój stan. Wywoływany dla wszystkich komórek podczas każdego kroku gry,
 \item program \textit{COLOR} -- określa kolor danego pola, korzystając z jego stanu. Wywoływany dla wszystkich komórek podczas każdego kroku gry, po wykonaniu programu \textit{TRANSITION}.
 \end{itemize}
 
@@ -288,17 +288,17 @@ Symulacja gry w życie przebiega w następujący sposób.
 \end{algorithm}
 
 \section{Dane początkowe}
-Dane do programu przekazujemy w pliku o rozszerzeniu \textit{.csv}. Pierwszy wiersz pliku zawiera nie będące liczbami nazwy kolumn. Kolejne wiersze zawierają początkowe informacje o komórkach. Pierwsze dwie kolumny każdego wiersza, opisują współrzędne punktów służących do generowania diagramu Woronoja.  Współrzędne muszą zawierać się w przedziale $[-1, 1]$. Kolejne kolumny zawierające dowolne liczby rzeczywiste opisują początkowy stan komórek. Liczba podanych kolumn definiuje rozmiar stanu komórek.
+Dane do programu przekazujemy w pliku o rozszerzeniu \textit{.csv}. Pierwszy wiersz pliku zawiera niebędące liczbami nazwy kolumn. Kolejne wiersze zawierają początkowe informacje o komórkach. Pierwsze dwie kolumny każdego wiersza, opisują współrzędne punktów służących do generowania diagramu Woronoja.  Współrzędne muszą zawierać się w przedziale $[-1, 1]$. Kolejne kolumny zawierające dowolne liczby rzeczywiste opisują początkowy stan komórek. Liczba podanych kolumn definiuje rozmiar stanu komórek.
 
 \section{Konstrukcje językowe}
 
 \subsection{Zmienne}
 \begin{itemize}
-\item zmienne standardowe -- przechowują liczby typu rzeczywistego. Nazwy zmiennych tworzone są, tak jak w języku $C$. Użytkownik nie deklaruje zmiennych, a zmienna bez przypisanej wartości ma domyślnie wartość $0$.
-\item zmienne tablicowe -- przechowują informacje o kolorze i stanie komórek. Dostęp do wartości zmiennych tablicowych wykonujemy przez operator $[]$, do którego podajemy liczby naturalne z przedziału $[0, n)$, gdzie $n$ to rozmiar tablicy. Podczas wykonywania napisanych przez użytkownika programów mamy dostęp do następujących zmiennych tablicowych: 
+\item zmienne standardowe -- przechowują liczby typu rzeczywistego. Nazwy zmiennych tworzone są, tak jak w języku $C$. Użytkownik nie deklaruje zmiennych,~a~zmienna bez przypisanej wartości ma domyślnie wartość $0$.
+\item zmienne tablicowe -- przechowują informacje o kolorze i stanie komórek. Dostęp do wartości zmiennych tablicowych wykonujemy przez operator~$[]$~ do~którego podajemy liczby naturalne z przedziału $[0, n)$, gdzie $n$ to rozmiar tablicy. Podczas wykonywania napisanych przez użytkownika programów mamy dostęp~do~następujących zmiennych tablicowych: 
 	\begin{itemize}
-	\item \textit{color} - tablica o rozmiarze $3$, trzymająca kolor komórki (RGB), wyznaczony ze stanu w programie \textit{COLOR}. 
-	\item \textit{state} -- tablica z której odczytujemy aktualny stan komórki.
+	\item \textit{color} - tablica o rozmiarze $3$, trzymająca kolor komórki (RGB), wyznaczony ze stanu w programie, \textit{COLOR}. 
+	\item \textit{state} -- tablica z której odczytujemy aktualny stan komórki,
 	\item \textit{newState} -- tablica do której zapisujemy wyliczony nowy stan komórki.
 	\end{itemize}
 \end{itemize}
@@ -333,15 +333,15 @@ Wyrażeniami mogą być następujące konstrukcje:
 \item zmienna lub dostęp do zmiennej tablicowej
 \item operator binarny
 \end{itemize}
-Argumentami operatora binarnego mogą być dowolne wyrażenia. Jeśli argumentem operatora binarnego jest inny operator binarny, taki argument musi znajdować się w nawiasach.
+Argumentami operatora binarnego mogą być dowolne wyrażenia. Jeśli argumentem operatora binarnego jest inny operator binarny, taki argument musi znajdować~się~w~nawiasach.
 
 \begin{example}
 Przykładowe poprawne i błędne wyrażenia:
 \begin{itemize}
-\item $varName$ -- poprawne wyrażenie 
-\item $1 + varName$ -- poprawne wyrażenie
-\item $1.0 + (state[1] + varName)$ -- poprawne wyrażenie
-\item $1 + 2 * 4$ -- błędne wyrażenie
+\item $varName$ -- poprawne wyrażenie,
+\item $1 + varName$ -- poprawne wyrażenie,
+\item $1.0 + (state[1] + varName)$ -- poprawne wyrażenie,
+\item $1 + 2 * 4$ -- błędne wyrażenie.
 \end{itemize}
 \end{example}
 
@@ -351,8 +351,8 @@ Wyrażenia możemy przypisywać do zmiennych oraz dostępnych zmiennych tablicow
 \begin{example}
 Przykładowe poprawne przypisania:
 \begin{itemize}
-\item $varName = (1 + varName2) * (10 - varName\_3);$
-\item $color[2] = 0.5;$
+\item $varName = (1 + varName2) * (10 - varName\_3);$,
+\item $color[2] = 0.5;$.
 \end{itemize}
 \end{example}
 
@@ -378,7 +378,7 @@ if((condVar + 1) == 0)
 Program \textit{INIT} jest miejscem, gdzie przy użyciu funkcji \textit{printEvery, stepsLimit, initialColor} ustawiane są początkowe parametry symulacji.
 
 \subsection{\textit{TRANSITION}}
-Program \textit{TRANSITION} służy do definiowania zasad zmiany stanów komórek. Aktualny stan odczytujemy ze zmiennej \textit{state}, która jest automatycznie ustawiana na wartości stanu każdej komórki. Wyliczony stan, który będzie aktualny w następnym kroku symulacji zapisujemy do zmiennej \textit{newState}. Domyślnie wartości zmiennej \textit{newState} są takie same jak te w zmiennej \textit{state}.
+Program \textit{TRANSITION} służy do definiowania zasad zmiany stanów komórek. Aktualny stan odczytujemy ze zmiennej \textit{state}, która jest automatycznie ustawiana~na~wartości stanu każdej komórki. Wyliczony stan, który będzie aktualny ~w~następnym kroku symulacji zapisujemy do zmiennej \textit{newState}. Domyślnie wartości zmiennej \textit{newState} są takie same jak te w zmiennej \textit{state}.
 
 \subsection{\textit{COLOR}}
 Program \textit{COLOR} służy do wyliczania koloru komórek. Korzystając ze zmiennej \textit{state}, wyliczany jest kolor w postaci RGB, który musi zostać zapisany do zmiennej \textit{color}. 
@@ -394,19 +394,19 @@ Funkcje parsujące oraz definicja gramatyki znajdują się w plikach \textit{Par
 
 Biblioteka PEGTL pozwala na tworzenie gramatyk przy użyciu prostych reguł:
 \begin{itemize}
-\item one -- dopasowuje pojedynczy znak.
-\item string -- dopasowuje ciąg znaków.
-\item seq  -- dopasowuje ciąg zasad.
-\item star -- dopasowuje dowolnie długi ciąg jednej reguły.
-\item plus -- dopasowuje jedno lub więcej wystąpienie reguły.
-\item opt  -- opcjonalne dopasowanie reguły.
+\item one -- dopasowuje pojedynczy znak,
+\item string -- dopasowuje ciąg znaków,
+\item seq  -- dopasowuje ciąg zasad,
+\item star -- dopasowuje dowolnie długi ciąg jednej reguły,
+\item plus -- dopasowuje jedno lub więcej wystąpienie reguły,
+\item opt  -- opcjonalne dopasowanie reguły,
 \item sor -- wybór pierwszej pasującej reguły w kolejności od lewej.
 \end{itemize}
 
 Wszystkie pozostałe dostępne reguły są kombinacjami podanych wyżej. Po zdefiniowaniu gramatyki, jako wejście parsera przekazywany jest ciąg znaków wczytany z plików w katalogu \textit{programs}. Z wczytanych programów usuwane są wszystkie białe znaki, co powoduje, że użytkownik może z nich dowolnie korzystać podczas pisania programów.
 
 \section{Ewaluacja programów}
-Po uzyskaniu abstrakcyjnych drzew rozbiorów programów \textit{INIT, TRANSITION, COLOR}, zostaną one ewaluowane w strukturze \textit{Game}, która odpowiedzialna jest za wykonywanie symulacji. Progra, \textit{INIT} ewaluowany jest jednokrotnie, przed rozpoczęciem symulacji. \textit{COLOR} i \textit{TRANSITION} ewaluowane są wielokrotnie, ze zmiennymi tablicowymi ustawionymi na dane odpowiadające aktualnie przetwarzanej komórce diagramu. 
+Po uzyskaniu abstrakcyjnych drzew rozbiorów programów \textit{INIT, TRANSITION, COLOR} zostaną one ewaluowane w strukturze \textit{Game}, która odpowiedzialna jest~za~wykonywanie symulacji. Progra, \textit{INIT} ewaluowany jest jednokrotnie, przed rozpoczęciem symulacji. \textit{COLOR} i \textit{TRANSITION} ewaluowane są wielokrotnie, ze zmiennymi tablicowymi ustawionymi na dane odpowiadające aktualnie przetwarzanej komórce diagramu. 
 
 Wyrażenia ewaluowane są rekurencyjnie, w sposób gorliwy. Oznacza to, że lewa strona wyrażenia jest wyliczana w całości, przed wyliczeniem prawej strony. Nazwy użytych w programach zmiennych przechowywane są w kontenerze \textit{variable} będącym \textit{unoredered\_map}, ze standardowej biblioteki języka \textit{C++}. Wszystkie przypisane do zmiennych wartości są czyszczone po wykonaniu każdego programu \textit{COLOR} i \textit{TRANSITION}.
 
@@ -445,7 +445,7 @@ void main()
 
 \section{Kolorowanie pól diagramu}
 
-Pola diagramów będące wielokątami wypukłymi podzielone zostały na trójkąty. Wierzchołkami każdego z trójkątów są dwa końce jednej z krawędzi oraz punkt będący centrum danego pola. Wielokąt przekazywany jest do VBO jako zbiór trójkątów. Każdy trójkąt reprezentowany jest przez trzy punkty razem z ich kolorami. Kolor pola wyznaczany jest przez OpenGl jako interpolacja kolorów wierzchołków figury. Podanie wszystkich punktów wielokąta w jednakowym kolorze powoduje jednolity kolor całego pola. Podczas trwania symulacji kolory pól ulegają zmianie. W takim przypadku w VBO zmieniany jest kolor tylko jednego wielokąta, z wykorzystaniem funkcji \textit{glBufferSubData}.
+Pola diagramów będące wielokątami wypukłymi podzielone zostały na trójkąty. Wierzchołkami każdego z trójkątów są dwa końce jednej z krawędzi oraz punkt będący centrum danego pola. Wielokąt przekazywany jest do VBO jako zbiór trójkątów. Każdy trójkąt reprezentowany jest przez trzy punkty razem z ich kolorami. Kolor pola wyznaczany jest przez OpenGl jako interpolacja kolorów wierzchołków figury. Podanie wszystkich punktów wielokąta w jednakowym kolorze powoduje jednolity kolor całego pola. Podczas trwania symulacji kolory pól ulegają zmianie. W~takim przypadku w VBO zmieniany jest kolor tylko jednego wielokąta, z wykorzystaniem funkcji \textit{glBufferSubData}.
 
 \subsection{Vertex shader}
 Shader ustalający pozycję wierzchołków trójkąta oraz ustawiający ich kolor.
@@ -490,13 +490,13 @@ Jest to narzędzie symulujące podstawową grę w życie przedstawioną przez Co
 \end{itemize}
 
 \section{Golly}
-Golly \cite{golly}, to narzędzie stworzone do symulacji automatów komórkowych. Skrypty obsługujące symulację są pisane w językach \textit{Python} lub \textit{Lua}. Dzięki zastosowaniu algorytmu \textit{hashlife} \cite{hashlife}, Golly jest w stanie przetwarzać duże struktury składające się z milionów komórek. Przykładami pokazującymi możliwości tego narzędzia są zaimplementowane przy jego użyciu systemu komputerowe wykorzystujące równoważność gry w życie z maszyną Turinga.
+Golly \cite{golly}, to narzędzie stworzone do symulacji automatów komórkowych. Skrypty obsługujące symulację są pisane w językach \textit{Python} lub \textit{Lua}. Dzięki zastosowaniu algorytmu \textit{hashlife} \cite{hashlife} Golly jest w stanie przetwarzać duże struktury składające~się~z~milionów komórek. Przykładami pokazującymi możliwości tego narzędzia są zaimplementowane przy jego użyciu systemu komputerowe wykorzystujące równoważność gry w życie z maszyną Turinga.
 
-Golly dostarcza także duża bibliotekę przykładowych gier w życie, prezentujących jej najciekawsze zachowania.
+Golly dostarcza także dużą bibliotekę przykładowych gier w życie, prezentujących jej najciekawsze zachowania.
 
 
 \subsection{Algorytm hashlife}
-Algorytm wykorzystuje ważną własność automatów podobnych do gry w życie. Nawet pozornie losowe struktury automatów komórkowych, mogą zamienić~w~się zbiór oscylatorów i niezmiennych fragmentów. Plansza reprezentowana jest przez drzewo, którego wierzchołki mają dokładnie czterech synów. Algorytm zapamiętuje, w jaki sposób wykonywane są dane wzorce ułożeń komórek. Wykorzystując technikę hashowania, powtarzające się wzorce w drzewie są wyliczane są tylko raz, co~pozwala ograniczyć niezbędne obliczenia. Istotnymi minusami, są wykorzystywana przez algorytm pamięć oraz początkowy czas działania, niezbędny do zgromadzenia danych o symulacji.
+Algorytm wykorzystuje ważną własność automatów podobnych do gry w życie. Nawet pozornie losowe struktury automatów komórkowych, mogą zamienić~w~się~zbiór oscylatorów i niezmiennych fragmentów. Plansza reprezentowana jest przez drzewo, którego wierzchołki mają dokładnie czterech synów. Algorytm zapamiętuje, w jaki sposób wykonywane są dane wzorce ułożeń komórek. Wykorzystując technikę hashowania, powtarzające się wzorce w drzewie są wyliczane tylko raz, co~pozwala ograniczyć niezbędne obliczenia. Istotnymi minusami, są wykorzystywana przez algorytm pamięć oraz początkowy czas działania, niezbędny do zgromadzenia danych o symulacji.
 
 
 \nocite{woronoj}
