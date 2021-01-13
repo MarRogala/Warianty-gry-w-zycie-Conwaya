@@ -1,7 +1,5 @@
 #include "Game.h"
 
-Board board;
-
 void Game::setEnv(int field)
 {
     variables.clear();

@@ -12,6 +12,8 @@ struct Game {
 
     Game() : mt(std::random_device()()) { }
 
+    Board board;
+
     ptrType INITprogram;
     ptrType COLORprogram;
     ptrType TRANSITIONprogram;

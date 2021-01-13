@@ -8,13 +8,12 @@
 #include "Game.h"
 #include <cstdlib>
 
-extern struct Board board;
 Game game;
 
 void renderScene()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    board.print();
+    game.board.print();
     glFlush();
 }
 
@@ -29,7 +28,7 @@ int main(int argc, char **argv)
         fileName = argv[1];
 
     game.loadData(fileName);
-    board.generateVoronoi();
+    game.board.generateVoronoi();
     game.doParsing();
 
     GLFWwindow* window;
@@ -51,7 +50,7 @@ int main(int argc, char **argv)
     if(glewInit() != GLEW_OK)
         std::cout << "GLEW INIT ERROR\n";
 
-    board.createBuffers();
+    game.board.createBuffers();
     game.gameSetup(fileName);
 
     while (!glfwWindowShouldClose(window))
