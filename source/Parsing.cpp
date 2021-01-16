@@ -74,6 +74,7 @@ std::string language::readFile(std::string path)
     }
 
     std::string program;
+    bool comment = false;
 
     while(!file.eof())
     {
@@ -81,7 +82,14 @@ std::string language::readFile(std::string path)
         getline(file, line);
         for(auto c: line)
         {
-            if(!isspace(c))
+            if(isspace(c))
+                continue;
+            if(c == '#')
+            {
+                comment ^= 1;
+                continue;
+            }
+            if(!comment)
                 program.push_back(c);
         }
     }
