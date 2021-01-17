@@ -8,6 +8,7 @@ class Expression {
 
 public:
     virtual float calculate() = 0;
+    virtual ~Expression() { }
 };
 
 class Number : public Expression {
@@ -18,11 +19,13 @@ public:
     {
         return number;
     }
+    ~Number() { }
 };
 
 class Function : public Expression {
 public:
     virtual float calculate() = 0;
+    ~Function() { }
 };
 
 class PrintEvery : public Function {
@@ -36,6 +39,7 @@ public:
         printEvery = value;
         return 0;
     }
+    ~PrintEvery() { }
 };
 
 class InitialColor : public Function {
@@ -45,12 +49,12 @@ public:
     InitialColor(float r, float g, float b, FieldColor& c) : r(r), g(g), b(b), color(c) { }
     float calculate()
     {
-        std::cout << "init color\n";
         color.r = r;
         color.g = g;
         color.b = b;
         return 0;
     }
+    ~InitialColor() { }
 };
 
 class StepsLimit : public Function {
@@ -64,6 +68,7 @@ public:
         stepsLimit = value;
         return 0;
     }
+    ~StepsLimit() { }
 };
 
 class Random : public Function {
@@ -77,6 +82,7 @@ public:
         float val = left + (abs(left - right) * dist(mt));
         return val;
     }
+    ~Random() { }
 };
 
 class SkipState : public Function {
@@ -97,6 +103,7 @@ public:
         }
         else return 1.0;
     }
+    ~SkipState() { }
 };
 
 class Count : public Function {
@@ -116,6 +123,7 @@ public:
         }
         return result;
     }
+    ~Count() { }
 };
 
 class Variable : public Expression {
@@ -130,6 +138,7 @@ public:
             return variables[name];
         else return 0.0;
     }
+    ~Variable() { }
 };
 
 class ArrayVariable : public Expression {
@@ -155,6 +164,7 @@ public:
                     return 0;
             }
         }
+        ~ArrayVariable() { }
 };
 
 class BinaryExpression;
@@ -166,6 +176,11 @@ protected:
 public:
     BinaryExpression(Expression* l, Expression* r) : left(l), right(r) { }
     virtual float calculate() = 0;
+    virtual ~BinaryExpression()
+    {
+        delete left;
+        delete right;
+    }
 };
 
 class Add : public BinaryExpression {
@@ -175,6 +190,7 @@ public:
     {
         return left->calculate() + right->calculate();
     }
+    ~Add() { }
 };
 
 class Sub : public BinaryExpression {
@@ -184,6 +200,7 @@ public:
     {
         return left->calculate() - right->calculate();
     }
+    ~Sub() { }
 };
 
 class Mul : public BinaryExpression {
@@ -193,6 +210,7 @@ public:
     {
         return left->calculate() * right->calculate();
     }
+    ~Mul() { }
 };
 
 class Div : public BinaryExpression {
@@ -202,6 +220,7 @@ public:
     {
         return left->calculate() / right->calculate();
     }
+    ~Div() { }
 };
 
 class Mod : public BinaryExpression {
@@ -211,6 +230,7 @@ public:
     {
         return static_cast<int>(left->calculate()) % static_cast<int>(right->calculate());
     }
+    ~Mod() { }
 };
 
 class LessEqual : public BinaryExpression {
@@ -220,6 +240,7 @@ public:
     {
         return left->calculate() <= right->calculate() ? 1 : 0;
     }
+    ~LessEqual() { }
 };
 
 class MoreEqual : public BinaryExpression {
@@ -229,6 +250,7 @@ public:
     {
         return left->calculate() >= right->calculate() ? 1 : 0;
     }
+    ~MoreEqual() { }
 };
 
 class More : public BinaryExpression {
@@ -238,6 +260,7 @@ public:
     {
         return left->calculate() > right->calculate() ? 1 : 0;
     }
+    ~More() { }
 };
 
 class Less : public BinaryExpression {
@@ -247,6 +270,7 @@ public:
     {
         return left->calculate() < right->calculate() ? 1 : 0;
     }
+    ~Less() { }
 };
 
 class Equal : public BinaryExpression {
@@ -256,6 +280,7 @@ public:
     {
         return left->calculate() == right->calculate() ? 1 : 0;
     }
+    ~Equal() { }
 };
 
 class And : public BinaryExpression {
@@ -265,6 +290,7 @@ public:
     {
         return left->calculate() != 0.0 && right->calculate() != 0.0 ? 1 : 0;
     }
+    ~And() { }
 };
 
 class Or : public BinaryExpression {
@@ -274,11 +300,13 @@ public:
     {
         return left->calculate() != 0.0 || right->calculate() != 0.0 ? 1 : 0;
     }
+    ~Or() { }
 };
 
 class Instruction {
 public:
     virtual void evaluate() = 0;
+    virtual ~Instruction() { }
 };
 
 class FunctionCall : public Instruction {
@@ -289,11 +317,16 @@ public:
     {
         float v = func->calculate();
     }
+    ~FunctionCall()
+    {
+        delete func;
+    }
 };
 
 class Destination {
 public:
     virtual void assign(float value) = 0;
+    virtual ~Destination() { }
 };
 
 class VariableDestination : public Destination {
@@ -306,6 +339,7 @@ public:
     {
         variables[name] = value;
     }
+    ~VariableDestination() { }
 };
 
 class ArrayDestination : public Destination
@@ -332,6 +366,7 @@ public:
                 break;
         }
     }
+    ~ArrayDestination() { }
 };
 
 class Assignment : public Instruction {
@@ -342,6 +377,11 @@ public:
     void evaluate()
     {
         destination->assign(expression->calculate());
+    }
+    ~Assignment()
+    {
+        delete destination;
+        delete expression;
     }
 };
 
@@ -354,6 +394,7 @@ public:
         for(auto ins: block)
             ins->evaluate();
     }
+    ~Block() { }
 };
 
 class If : public Instruction {
@@ -367,5 +408,9 @@ public:
         {
             block.evaluate();
         }
+    }
+    ~If()
+    {
+        delete exp;
     }
 };
