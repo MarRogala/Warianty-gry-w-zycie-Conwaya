@@ -1,29 +1,21 @@
 # Praca inżynierska II UWr
 
-## Status
-Działający generator diagramów Woronoja. Poprawione rysowanie, używając glew.
-
-Działający parser języka opisu gry.
-Ewaluacja większości funkcji programów COLOR i TRANSITION.
-Pliki ```.csv``` jako wejście.
-
 ## Wymagane biblioteki
 1. glfw
 2. glew
-3. freeglut
-4. kompilator clang w wersji 9.0 lub nowszej
-5. pegtl
+3. kompilator clang w wersji 9.0 lub nowszej
+4. PEGTL
 
 ## Plik z danymi
 Dane muszą być umieszczone w pliku w formacie ```.csv``` w katalogu ```/input```.
-Pierwszy rząd to nie będące liczbami nazwy kolumn. Pierwsze dwie kolumny to odpowiednio współrzędne ```x, y``` punktów. Kolejne kolumny odpowiadają początkowym wartością stanu pól.
+Pierwszy rząd to niebędące liczbami nazwy kolumn. Pierwsze dwie kolumny to odpowiednio współrzędne ```x, y``` punktów. Kolejne kolumny odpowiadają początkowym wartością stanu pól.
 
-Liczby rzeczywiste umieszczone w pliku wejściowym, muszą być w formacie angielskim (część ułamkowa oddzielona kropką).
+Liczby rzeczywiste umieszczone w pliku wejściowym, muszą być w formacie angielskim (część ułamkowa oddzielona kropką). Współrzędne ```x, y``` punktów muszą zawierać się w przedziale ```[-1, 1]```.
 
 ## Kompilacja
-1. make clean
-2. make
-3. make run
-   Uruchamia program, biorąc /input/input.csv jako plik z danymi.
-4. make run FILE=exampleFileName.csv
-   Uruchamia program, biorąc /input/exampleFileName.csv jako plik z danymi.
+1. ```make clean```
+2. ```make```
+3. ```make run```
+   Uruchamia program, biorąc ```/input/input.csv``` jako plik z danymi.
+4. ```make run FILE=exampleFileName.csv```
+   Uruchamia program, biorąc ```/input/exampleFileName.csv``` jako plik z danymi.

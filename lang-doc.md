@@ -1,25 +1,32 @@
 # Opis
 
+## Dane początkowe
+
+Dane do programu przekazujemy w pliku o rozszerzeniu.csv. Pierwszy wiersz pliku zawiera niebędące liczbami nazwy kolumn. Kolejne wiersze zawierają początkowe  informacje  o  komórkach.  Pierwsze  dwie  kolumny  każdego  wiersza,  opisują współrzędne punktów służących do generowania diagramu Woronoja. Współrzędne muszą zawierać się w przedziale ```[−1,1]```. Kolejne kolumny zawierające dowolne liczby rzeczywiste  opisują  początkowy  stan  komórek.  Liczba  podanych  kolumn  definiuje rozmiar stanu komórek.
+
+## Komentarze
+Blok komentarza w kodzie rozpoczyna się i kończy znakami ```#```.
+
+Na przykład ``` # komentarz #```.
+
 ## Zmienne i zmienne tablicowe
-- Nazwy zmiennych tworzone jak w języku C.
-- Zmienne tablicowe to tylko: state[], newState[], color[].
-- Indeksem zmiennej tablicowej może być tylko liczba naturalna.
+- Zmienne standardowe – przechowują liczby typu rzeczywistego. Nazwy zmiennych tworzone są, tak jak w języku C. Użytkownik nie deklaruje zmiennych, a zmienna bez przypisanej wartości ma domyślnie wartość 0.
+- Zmienne tablicowe – przechowują informacje o kolorze i stanie komórek. Dostęp do wartości zmiennych tablicowych wykonujemy przez operator ```[]``` do którego podajemy liczby naturalne z przedziału ```[0, n)```, gdzie n to rozmiar tablicy. Podczas  wykonywania  napisanych  przez  użytkownika  programów  mamy  dostęp do następujących zmiennych tablicowych:
+    - color – tablica o rozmiarze 3, trzymająca kolor komórki (RGB), wyznaczony ze stanu w programie, COLOR.
+    - state – tablica z której odczytujemy aktualny stan komórki,
+    - newState – tablica do której zapisujemy wyliczony nowy stan komórki.
 
 ## Wyrażenia
 Dostępne operatory: ```+, -, * , /, %, <, >, <=, >=, ==, &&, ||```;
 
-Wyrażeniem "prymitywnym" jest:
+Wyrażeniami mogą być następujące konstrukcje:
 1. liczba (całkowita, lub zmiennoprzecinkowa z kropką)
 2. zmienna
-3. zmienna tablicowa
+3. zmienne tablicowe ```color``` i ```state```
 4. wywołanie funkcji
+5. operator binarny
 
-Wyrażenie binarne jest postaci:
-
-
-wyrażenie prymitywne lub wyrażenie binarne w nawiasie --> operator --> wyrażenie prymitywne lub wyrażenie binarne w nawiasie
-
-Wyrażenie to wyrażenie binarne lub wyrażenie prymitywne.
+Argumentami  operatora  binarnego  mogą  być  dowolne  wyrażenia.  Jeśli  argumentem  operatora  binarnego  jest  inny  operator  binarny,  taki  argument  musi  znajdować się w nawiasach.
 
 Przykłady wyrażeń:
 
@@ -44,10 +51,10 @@ Dostępne funkcje:
 5. ```printEvery(value)``` - ustawia, co ile kroków wygląd planszy jest aktualizowany
 6. ```skipState(index, value)``` - przerywa wykonywanie programu TRANSITION jeśli zachodzi ```state[index] == value```. Dla tego pola pominięte zostanie też wykonanie programu COLOR.
 
-Wywołanie funkcji nie będące częścią wyrażenia kończy się średnikiem.
+Wywołanie funkcji niebędące częścią wyrażenia kończy się średnikiem.
 
 ## Przypisania
-Przypisanie możemy wykonywać do zmiennej lub jednej z trzech zmiennych tablicowych. Wartością przypisania może być dowolne wyrażenie.
+Przypisanie możemy wykonywać do zmiennej lub zmiennych tablicowych ```color``` i ```newState```. Wartością przypisania może być dowolne wyrażenie.
 
 Przykłady:
 
@@ -62,7 +69,7 @@ Przykłady:
 - Wszystkie przypisania, widoczne są tylko w obrębie jednego programu (przypisanie wykonane w TRANSITION, nie jest widoczne w COLOR, ani w następnym TRANSITION).
 - Przypisanie kończy się średnikiem.
 
-### if-y
+### Instrukcje warunkowe
 - Warunkiem może być dowolne wyrażenie.
 - W bloku można wykonywać tylko przypisania.
 - Blok musi być otoczony nawiasami ```{}```
@@ -75,9 +82,9 @@ Przykład:
     }
 
 ## Definiujemy trzy programy
-1. ```Init``` - wywołuje funkcje ustawiające podstawowe informacje o grze
-2. ```Color``` - Korzystając ze stanu komórki generuje kolor w postaci RGB
-3. ```Trans``` - Korzystając ze stanu komórki generuje nowy stan
+1. ```Init``` - wywołuje funkcje ustawiające podstawowe informacje o grze,
+2. ```Color``` - Korzystając ze stanu komórki generuje kolor w postaci RGB,
+3. ```Trans``` - Korzystając ze stanu komórki generuje nowy stan.
 
 ### Init
 Domyślne wartości:
@@ -99,29 +106,27 @@ Budowanie nowego stanu w zmiennej ```newState```.
 Na początku wykonywania programu TRANSITION, do zmiennej ```newState``` przypisywana jest wartość zmiennej ```state```.
 
 # Opis przykładu
-Komentarze dodane do obu programów nie są obsługiwane.
 
 ## Stan pola
-    - state[0] - mówi czy pole jest żywe
-    - state[1] - liczy, od ilu kroków pole powinno być żywe
+    - state[0] - mówi czy pole jest żywe,
+    - state[1] - liczy, od ilu kroków pole powinno być żywe.
 
 ## Program TRANSITION
 
-    skipState(0, 1.0); // jeśli pole jest żywe, nie trzeba z nim już nic robić
-    cond1 = count(0, 1.0) > 0; // ilu jest żywych sąsiadów
+    cond1 = count(0, 1.0) > 0; # sprawdza, ilu jest żywych sąsiadów #
     if(cond1 && random(0.0, 1.0) > 0.5)
     {
-        // wykonuje się z prawdopodobieństwem 1/2 jeśli pole ma żywego sąsiada
+        # wykonuje się z prawdopodobieństwem 1/2 jeśli pole ma żywego sąsiada #
         newState[0] = 1;
     }
     if(cond1 && (cond == 0.0))
     {
-        // jeśli pole ma żywego sąsiada, zwiększ licznik o 1.
+        # jeśli pole ma żywego sąsiada, zwiększ licznik o 1. #
         newState[1] = state[1] + 1;
     }
     if(state[1] > 20)
     {
-        // jeśli pole powinno być żywe już 20 kroków, robi się martwe.
+        # jeśli pole powinno być żywe już 20 kroków, robi się martwe. #
         newState[1] = 0;
         newState[0] = 0;
     }
@@ -130,19 +135,19 @@ Komentarze dodane do obu programów nie są obsługiwane.
 
     if(state[0] == 0)
     {
-        // ustaw kolor martwego pola
+        # ustaw kolor martwego pola #
         color[0] = 1.0;
         color[1] = 1.0;
     }
     if(state[0])
     {
-        // jeśli pole jest żywe zmień kolor (na błękitny)
+        # jeśli pole jest żywe, zmień kolor (na błękitny) #
         color[0] = 0.1;
         color[1] = 0.8;
     }
     if((state[1] > 0) && (state[0] == 0))
     {
-        //jeśli pole powinno być żywe ale nie jest, zmień kolor (na fioletowy)
+        # jeśli pole powinno być żywe ale nie jest, zmień kolor (na fioletowy) #
         color[0] = 0.9;
         color[1] = 0.0;
     }
