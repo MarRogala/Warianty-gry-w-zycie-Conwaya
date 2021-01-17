@@ -38,15 +38,17 @@ std::string Game::nodeContent(const parse_tree::node& n)
     return s;
 }
 
-float Game::rndValue(float l, float r)
+float Game::getValue(const parse_tree::node& n)
 {
-    std::uniform_real_distribution<float> dist(0.0, 1.0);
-    return l + (abs(l - r) * dist(mt));
+    if(n.type == "language::integer" || n.type == "language::floatingPoint")
+    {
+        return std::stof(nodeContent(n));
+    }
 }
 
-float Game::functionValue(const parse_tree::node& n)
+Expression* Game::transcriptFunction(const parse_tree::node& n)
 {
-    auto& firstArg = n.children[0];;
+    auto& firstArg = n.children[0];
     std::string functionName = nodeContent(*firstArg);
 
     if(functionName == "skipState")
@@ -59,12 +61,7 @@ float Game::functionValue(const parse_tree::node& n)
             std::cerr << "state index out of bound\n";
             exit(1);
         }
-        if(state[index] == value)
-        {
-            toBeSkipped[currentFieldId] = true;
-            return -1.0;
-        }
-        else return 1.0;
+        return new SkipState(index, value, currentFieldId, toBeSkipped, state);
     }
     else if(functionName == "count")
     {
@@ -76,55 +73,47 @@ float Game::functionValue(const parse_tree::node& n)
             std::cerr << "state index out of bound\n";
             exit(1);
         }
-        int result = 0;
-        for(auto neig: board.fields[currentFieldId].neighbours)
-        {
-            if(board.fields[neig].state[index] == value)
-                result ++;
-        }
-        return result;
+        return new Count(board, index, value, currentFieldId);
     }
     else if(functionName == "random")
     {
         // random number [l, r]
         int left = getValue(*(n.children[1]));
         int right = getValue(*(n.children[2]));
-
-        return rndValue(left, right);
+        return new Random(left, right, mt);
     }
     else if(functionName == "printEvery")
     {
-        printEvery =  getValue(*(n.children[1]));
+        int value = getValue(*(n.children[1]));
         if(printEvery == 0)
         {
             std::cerr << "printEvery can't be equal to 0\n";
             exit(1);
         }
-        return 1.0;
+        return new PrintEvery(printEvery, value);
     }
     else if(functionName == "initialColor")
     {
-        initColor.r = getValue(*(n.children[1]));
-        initColor.g = getValue(*(n.children[2]));
-        initColor.b = getValue(*(n.children[3]));
-        return 1.0;
+        float r = getValue(*(n.children[1]));
+        float g = getValue(*(n.children[2]));
+        float b = getValue(*(n.children[3]));
+        return new InitialColor(r, g, b, initColor);
     }
     else if(functionName == "stepsLimit")
     {
         float value = getValue(*(n.children[1]));
-        stepsLimit = value;
+        return new StepsLimit(value, stepsLimit);
     }
-    return 1;
 }
 
-float Game::operatorValue(const parse_tree::node& n)
+Expression* Game::transcriptBinaryExpression(const parse_tree::node& n)
 {
     auto& firstArg = n.children[0];
     auto& secondArg = n.children[1];
     auto& thirdArg = n.children[2];
 
-    float leftVal = getValue(*firstArg);
-    float rightVal = getValue(*thirdArg);
+    Expression* leftExp = transcriptExpressionTree(*firstArg);
+    Expression* rightExp = transcriptExpressionTree(*thirdArg);
 
     std::string op = nodeContent(*secondArg);
 
@@ -132,49 +121,46 @@ float Game::operatorValue(const parse_tree::node& n)
     {
         switch (op[0]) {
             case '+':
-                return leftVal + rightVal;
+                return new Add(leftExp, rightExp);
             case '-':
-                return leftVal + rightVal;
+                return new Sub(leftExp, rightExp);
             case '*':
-                return leftVal * rightVal;
+                return new Mul(leftExp, rightExp);
             case '/':
-                return leftVal / rightVal;
+                return new Div(leftExp, rightExp);
             case '%':
-                return static_cast<int>(leftVal) % static_cast<int>(rightVal);
+                return new Mod(leftExp, rightExp);
             case '<':
-                return leftVal < rightVal ? 1 : 0;
+                return new Less(leftExp, rightExp);
             case '>':
-                return leftVal > rightVal ? 1 : 0;
+                return new More(leftExp, rightExp);
         }
     }
     else
     {
         if(op == "<=")
-            return leftVal <= rightVal ? 1 : 0;
+            return new LessEqual(leftExp, rightExp);
         else if(op == ">=")
-            return leftVal >= rightVal ? 1 : 0;
+            return new MoreEqual(leftExp, rightExp);
         else if(op == "==")
-            return leftVal == rightVal;
+            return new Equal(leftExp, rightExp);
         else if(op == "&&")
-            return (leftVal != 0 && rightVal != 0) ? 1 : 0;
+            return new And(leftExp, rightExp);
         else if(op == "||")
-            return (leftVal != 0 || rightVal != 0) ? 1 : 0;
+            return new Or(leftExp, rightExp);
     }
 }
 
-float Game::getValue(const parse_tree::node& n)
+Expression* Game::transcriptExpressionTree(const parse_tree::node& n)
 {
     if(n.type == "language::variable")
     {
         std::string name = nodeContent(n);
-        if(variables.find(name) == variables.end())
-            return 0.0;
-        else
-            return variables[name];
+        return new Variable(variables, name);
     }
     else if(n.type == "language::integer" || n.type == "language::floatingPoint")
     {
-        return std::stof(nodeContent(n));
+        return new Number(std::stof(nodeContent(n)));
     }
     else if(n.type == "language::arrayVariable")
     {
@@ -182,46 +168,30 @@ float Game::getValue(const parse_tree::node& n)
         auto& indexNode = n.children[1];
         std::string name = nodeContent(*nameNode);
         int index = static_cast<int>(getValue(*indexNode));
-        if(name == "color")
-        {
-            if(index > 2)
-            {
-                std::cerr << "color index out of bound\n";
-                exit(1);
-            }
-            return color[index];
-        }
-        if(name == "state")
-        {
-            if(index > state.size())
-            {
-                std::cerr << "state index out of bound\n";
-                exit(1);
-            }
-            return state[index];
-        }
+        return new ArrayVariable(color, newState, state, name, index);
     }
     else if(n.type == "language::function")
     {
-        return functionValue(n);
+        return transcriptFunction(n);
     }
     else if(n.type == "language::binaryExpression")
     {
-        return operatorValue(n);
+        return transcriptBinaryExpression(n);
     }
 }
 
-void Game::evalProgram(const parse_tree::node& n)
+Instruction* Game::transcriptProgramTree(const parse_tree::node& n, bool root)
 {
     if(n.type == "language::assignment")
     {
-        float value = getValue(*n.children[1]);
+        Expression* expression = transcriptExpressionTree(*n.children[1]);
         auto& dest = n.children[0];
+        Destination *destination;
         if(dest->type == "language::variable")
         {
             std::string name;
             name = nodeContent(*dest);
-            variables[name] = value;
+            destination = new VariableDestination(name, variables);
         }
         else if(dest->type == "language::arrayVariable")
         {
@@ -229,66 +199,45 @@ void Game::evalProgram(const parse_tree::node& n)
             int index;
             name = nodeContent(*(dest->children[0]));
             index = getValue(*(dest->children[1]));
-            if(name == "color")
-            {
-                if(index > 2)
-                {
-                    std::cerr << "color index out of bound\n";
-                    exit(1);
-                }
-                color[index] = value;
-            }
-            else
-            {
-                if(index > state.size())
-                {
-                    std::cerr << "state or newState index out of bound\n";
-                    exit(1);
-                }
-                if(name == "state")
-                    state[index] = value;
-                else if(name == "newState")
-                    newState[index] = value;
-            }
+            destination = new ArrayDestination(name, index, color, state, newState);
         }
-        return;
+        return new Assignment(destination, expression);
     }
     else if(n.type == "language::function")
     {
-        int value = functionValue(n);
-        if(value == -1.0)
-            return;
+        return new FunctionCall(transcriptExpressionTree(n));
     }
     else if(n.type == "language::ifStatement")
     {
-        float cond = getValue(*(n.children[0]));
-        if(cond != 0.0)
+        Expression* cond = transcriptExpressionTree(*(n.children[0]));
+        std::vector<Instruction*> block;
+        for(auto& chld: n.children)
         {
-            for(auto& chld: n.children)
-            {
-                if(chld->type == "language::variable")
-                    continue;
-                evalProgram(*chld);
-            }
+            if(chld->type != "language::assignment")
+                continue;
+            block.push_back(transcriptProgramTree(*chld, false));
         }
+        return new If(cond, block);
     }
-    else if(n.is_root())
+    else if(root)
     {
+        std::vector<Instruction*> block;
         for(auto& ins: n.children)
-            evalProgram(*ins);
-        return;
+            block.push_back(transcriptProgramTree(*ins, false));
+        return new Block(block);
     }
+
 }
 
 void Game::evaluateINITProgram()
 {
-    evalProgram(*INITprogram);
+    INITprogram->evaluate();
 }
 
 void Game::evaluateCOLORProgram(int field)
 {
     setEnv(field);
-    evalProgram(*COLORprogram);
+    COLORprogram->evaluate();
     if(board.fields[field].color.r == color[0] && board.fields[field].color.g == color[1] && board.fields[field].color.b == color[2])
     {
         board.fields[field].changeColor = false;
@@ -304,7 +253,7 @@ void Game::evaluateCOLORProgram(int field)
 void Game::evaluateTRANSITIONProgram(int field)
 {
     setEnv(field);
-    evalProgram(*TRANSITIONprogram);
+    TRANSITIONprogram->evaluate();
 }
 
 void Game::loadData(std::string fileName)
@@ -392,7 +341,6 @@ void Game::loadData(std::string fileName)
     for(unsigned int i = 0; i < fileData.size(); i ++)
     {
         Field field = Field(i, {fileData[i][0], fileData[i][1] + dist(mt)}, initColor);
-        //std::cout << "field: " << field.fieldCenter.first << " " << field.fieldCenter.second << "\n";
         for(unsigned int j = 2; j < fileData[i].size(); j ++)
         {
             field.state.push_back(fileData[i][j]);
@@ -409,9 +357,13 @@ void Game::doParsing()
     COLORstring = language::readFile("programs/COLOR.c");
     TRANSITIONstring = language::readFile("programs/TRANSITION.c");
 
-    INITprogram = language::parseProgram(INITstring, "INIT");
-    COLORprogram = language::parseProgram(COLORstring, "COLOR");
-    TRANSITIONprogram = language::parseProgram(TRANSITIONstring, "TRANS");
+    INITtree = language::parseProgram(INITstring, "INIT");
+    COLORtree = language::parseProgram(COLORstring, "COLOR");
+    TRANSITIONtree = language::parseProgram(TRANSITIONstring, "TRANS");
+
+    INITprogram = transcriptProgramTree(*INITtree, true);
+    COLORprogram = transcriptProgramTree(*COLORtree, true);
+    TRANSITIONprogram = transcriptProgramTree(*TRANSITIONtree, true);
 }
 
 void Game::gameSetup(std::string fileName)
@@ -428,7 +380,6 @@ void Game::gameSetup(std::string fileName)
 
 void Game::doStep()
 {
-    //int x; std::cin >> x;
     if(stepsLimit != -1 && stepsCounter > stepsLimit)
         return;
     stepsCounter ++;

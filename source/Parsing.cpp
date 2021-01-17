@@ -15,27 +15,6 @@ std::string language::nodeContent(const parse_tree::node& n, std::string program
     return s;
 }
 
-void print_node(const parse_tree::node& n, std::string program)
-{
-    if( n.is_root() ) {
-        std::cout << "ROOT" << std::endl;
-    }
-    else {
-        if( n.has_content() ) {
-            std::cout << "type: " << n.type << " at: " << n.begin() << " to " << n.end() << "\n";
-            std::cout << "str: " << language::nodeContent(n, program) << "\n";
-        }
-        else {
-            std::cout << n.type << std::endl;
-        }
-    }
-    if( !n.children.empty() ) {
-        for( auto& up : n.children ) {
-            print_node(*up, program);
-        }
-    }
-}
-
 void language::printError(parse_error e, std::string program, std::string name)
 {
     const auto p = e.positions().front();

@@ -1,5 +1,5 @@
-#include "Board.h"
 #include "Parsing.h"
+#include "Evaluation.h"
 
 #include <unordered_set>
 #include <unordered_map>
@@ -14,9 +14,9 @@ struct Game {
 
     Board board;
 
-    ptrType INITprogram;
-    ptrType COLORprogram;
-    ptrType TRANSITIONprogram;
+    ptrType INITtree;
+    ptrType COLORtree;
+    ptrType TRANSITIONtree;
 
     std::string INITstring, COLORstring, TRANSITIONstring;
 
@@ -39,12 +39,17 @@ struct Game {
     void doParsing();
     std::string nodeContent(const parse_tree::node& n);
 
-    float functionValue(const parse_tree::node& n);
-    float operatorValue(const parse_tree::node& n);
     float getValue(const parse_tree::node& n);
-    void evalProgram(const parse_tree::node& n);
     void setEnv(int field);
     void evaluateINITProgram();
     void evaluateCOLORProgram(int field);
     void evaluateTRANSITIONProgram(int field);
+
+    Instruction* transcriptProgramTree(const parse_tree::node& n, bool root = false);
+    Expression* transcriptExpressionTree(const parse_tree::node& n);
+    Expression* transcriptFunction(const parse_tree::node& n);
+    Expression* transcriptBinaryExpression(const parse_tree::node& n);
+    Instruction* INITprogram;
+    Instruction* COLORprogram;
+    Instruction* TRANSITIONprogram;
 };
