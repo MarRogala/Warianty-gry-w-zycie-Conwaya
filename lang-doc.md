@@ -9,12 +9,12 @@ Blok komentarza w kodzie rozpoczyna się i kończy znakami ```#```.
 
 Na przykład ``` # komentarz #```.
 
-## Zmienne i zmienne tablicowe
+## Zmienne i atrybuty
 - Zmienne standardowe – przechowują liczby typu rzeczywistego. Nazwy zmiennych tworzone są, tak jak w języku C. Użytkownik nie deklaruje zmiennych, a zmienna bez przypisanej wartości ma domyślnie wartość 0.
-- Zmienne tablicowe – przechowują informacje o kolorze i stanie komórek. Dostęp do wartości zmiennych tablicowych wykonujemy przez operator ```[]``` do którego podajemy liczby naturalne z przedziału ```[0, n)```, gdzie n to rozmiar tablicy. Podczas  wykonywania  napisanych  przez  użytkownika  programów  mamy  dostęp do następujących zmiennych tablicowych:
-    - color – tablica o rozmiarze 3, trzymająca kolor komórki (RGB), wyznaczony ze stanu w programie, COLOR.
-    - state – tablica z której odczytujemy aktualny stan komórki,
-    - newState – tablica do której zapisujemy wyliczony nowy stan komórki.
+- Atrybuty – krotki przechowujące informacje o kolorze i stanie komórek. Dostęp do wartości atrybutów wykonujemy przez operator ```[]``` do którego podajemy liczby naturalne z przedziału ```[0, n)```, gdzie n to rozmiar atrybutu. Podczas  wykonywania  napisanych  przez  użytkownika  programów  mamy  dostęp do następujących atrybutów:
+    - color – krotka o rozmiarze 3, trzymająca kolor komórki (RGB), wyznaczony ze stanu w programie, COLOR.
+    - state – krotka z której odczytujemy aktualny stan komórki,
+    - newState – krotka do której zapisujemy wyliczony nowy stan komórki.
 
 ## Wyrażenia
 Dostępne operatory: ```+, -, * , /, %, <, >, <=, >=, ==, &&, ||```;
