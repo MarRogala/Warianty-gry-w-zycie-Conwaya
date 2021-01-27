@@ -453,7 +453,6 @@ void Beachline::completePolygons()
         }
 
     }
-    std::cout << "Generator finished\n";
 }
 
 void Beachline::print(double sweepY)

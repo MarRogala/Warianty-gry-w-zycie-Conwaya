@@ -1,5 +1,6 @@
 #define GLFW_INCLUDE_GLU
 #define GLFW_DLL
+#include "GL/glew.h"
 #include <GLFW/glfw3.h>
 #include <GL/glut.h>
 #include <GL/gl.h>
@@ -10,21 +11,24 @@
 #include "Voronoi.h"
 
 struct FieldColor {
-    double r, g, b;
-    FieldColor(double R, double G, double B) : r(R), g(G), b(B) { }
+    float r = 1.0, g = 1.0, b = 1.0;
+    FieldColor() = default;
+    FieldColor(float R, float G, float B) : r(R), g(G), b(B) { }
 };
 
 struct Field {
     int fieldId;
-    int state = 0;
-    FieldColor color = {1, 1, 1};
+    std::vector<float> state;
+    int fieldBufferOffset;
+    FieldColor color = {1.0, 1.0, 1.0};
+    int changeColor = true;
     std::pair<double, double> fieldCenter;
     std::vector<Point> fieldPoints;
     std::vector<Edge> fieldEdges;
     std::vector<int> neighbours;
     Field();
     Field(int id, std::pair<double, double> center);
+    Field(int id, std::pair<double, double> center, FieldColor color);
     Field(int id, std::vector<Point> points);
     void sortPoints();
-    void print();
 };
