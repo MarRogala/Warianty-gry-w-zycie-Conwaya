@@ -18,6 +18,18 @@
 
 \graphicspath{ {./images/} }
 
+\lstdefinestyle{customc}{
+  belowcaptionskip=1\baselineskip,
+  breaklines=true,
+  frame=single,
+  xleftmargin=\parindent,
+  language=C,
+  showstringspaces=false,
+  basicstyle=\footnotesize\ttfamily,
+  tabsize=3,
+}
+\lstset{escapechar=@,style=customc}
+
 \theoremstyle{definition} \newtheorem{definition}{Definicja}[]
 \theoremstyle{plain} \newtheorem{remark}[definition]{Obserwacja}
 \theoremstyle{plain} \newtheorem{theorem}[definition]{Twierdzenie}
@@ -28,7 +40,7 @@
 
 \chapter{Wprowadzenie}
 \section{Gra w życie}
-Gra w życie, została zaprezentowana w 1970 roku przez Johna Conwaya.  Jest~to~gra bez graczy, co oznacza, że jej ewolucja zależy tylko od stanu początkowego bez późniejszych ingerencji człowieka. Planszą jest dwu wymiarowa siatka kwadratowych komórek, z których każda ma 8 sąsiadów. Każda komórka może być żywa lub martwa. W standardowej grze obowiązują tylko trzy reguły:
+Gra w życie, została zaprezentowana w 1970 roku przez Johna Conwaya na łamach miesięcznika \textit{Scientific American} \cite{gardner}.  Jest~to~gra bez graczy, co oznacza, że jej ewolucja zależy tylko od stanu początkowego bez późniejszych ingerencji człowieka. Planszą jest dwu wymiarowa siatka kwadratowych komórek, z których każda ma 8 sąsiadów. Każda komórka może być żywa lub martwa. W standardowej grze obowiązują tylko trzy reguły:
 
 \begin{itemize}
 \item martwa komórka rodzi jeśli ma dokładnie 3 żywych sąsiadów,
@@ -53,7 +65,7 @@ Max Brenner w swoim artykule \cite{brenner} przedstawił symulację rozprzestrze
 Przedstawiona praca opisuje projekt pozwalający na definiowanie zasad gry~w~życie, używając prostego języka. Gra odbywa się na planszy będącej diagramem Woronoja, co istotnie narusza jedną z właściwości automatów komórkowych, mianowicie komórki automatu różnią się od siebie. Pozwala to wprowadzić element nieregularności oraz upodabnia grę do prawdziwego życia, w którym elementy symulacji mają istotne różnice wynikające se swojej budowy lub środowiska.
 Weźmy za przykład ludzi, którzy mają różną liczbę osób w swoim otoczeniu, co wpływa na wiarygodność symulacji przeprowadzonych na standardowej siatce kwadratów.
 
-Pierwszą częścią pracy jest przedstawienie algorytmu Fortunea pozwalającego na generowanie diagramów Woronoja. Algorytm przyjmuje na wejściu zbiór punktów oraz opierając się na technice zamiatania, generuje na ich podstawie diagram.
+\hyperref[sec:fortune]{Pierwszą częścią pracy} jest przedstawienie algorytmu Fortunea pozwalającego na generowanie diagramów Woronoja. Algorytm przyjmuje na wejściu zbiór punktów oraz opierając się na technice zamiatania, generuje na ich podstawie diagram.
 Algorytm Fortunea rozpatruje względem współrzędnej $y$ następujące wydarzenia:
 \begin{itemize}
 	\item site event - miotła napotyka kolejny punkt z wejściowego zbioru,
@@ -61,11 +73,11 @@ Algorytm Fortunea rozpatruje względem współrzędnej $y$ następujące wydarze
 \end{itemize}
 Po rozpatrzeniu wszystkich wydarzeń wynikiem działania algorytmu są krawędzie oraz graf sąsiedztwa pól diagramu Woronoja.
 
-Drugą częścią pracy jest opis gramatyki oraz mechanizmu prasowania i ewaluacji języka opisu gry. Parser tworzonych przez użytkowników programów wykorzystuje bibliotekę PEGTL, która opiera się na gramatycę PEG oraz parsowaniu z góry na dół. Wynikiem parsowania jest abstrakcyjne drzewo rozkładu języka, które jest następnie ewaluowane do odpowiednich funkcji opisujących grę w życie.
+\hyperref[sec:parser]{Drugą częścią pracy} jest opis gramatyki oraz mechanizmu prasowania i ewaluacji języka opisu gry. Parser tworzonych przez użytkowników programów wykorzystuje bibliotekę PEGTL, która opiera się na gramatycę PEG oraz parsowaniu z góry na dół. Wynikiem parsowania jest abstrakcyjne drzewo rozkładu języka, które jest następnie ewaluowane do odpowiednich funkcji opisujących grę w życie.
 
-Kolejna część to opis wykorzystania API OpenGl do przeprowadzenia wizualizacji gry.
+\hyperref[sec:openGl]{Kolejna część} to opis wykorzystania API OpenGl do przeprowadzenia wizualizacji gry.
 
-Pracę uzupełnia opis istniejących narzędzi i algorytmów do przeprowadzania symulacji z użyciem gry w życie.
+\hyperref[sec:tools]{Pracę uzupełnia opis} istniejących narzędzi i algorytmów do przeprowadzania symulacji z użyciem gry w życie.
 
 \chapter{Diagramy Woronoja}
 
@@ -88,6 +100,7 @@ Przykładowy diagram Woronoja z zaznaczonymi $10$ centrami.
 \end{example}
 
 \section{Algorytm Fortunea}
+\label{sec:fortune}
 \subsection{Opis algorytmu}
 Jednym ze sposobów  generowania diagramów Woronoja jest algorytm zaproponowany przez Johna Fortunea oparty na technice zamiatania \cite{miotla}. 
 
@@ -252,6 +265,7 @@ Algorytmy wyznaczające triangulację Delone działają w złożoności $O(nlogn
 Korzystając z wyznaczonej triangulacji, można w łatwy sposób uzyskać diagram Woronoja, łącząc punkty okręgów opisanych na trójkątach. 
 
 \chapter{Język opisu gry}
+\label{sec:parser}
 Standardową grę w życie można opisać w bardzo prosty sposób. Potrzebne~są~nam informacje o tym, kiedy komórka pozostaje żywa i kiedy ożywa, będąc wcześniej martwa. Możemy z tego wywnioskować, kiedy komórka umiera, co daje nam komplet niezbędnych reguł. Zasady przedstawiamy według następującej konwencji:
 \begin{itemize}
 \item na początku podajemy liczby żywych sąsiadów, dla których komórka pozostaje żywa,
@@ -287,27 +301,103 @@ Symulacja gry w życie przebiega w następujący sposób.
  \caption{Pseudokod algorytmu}
 \end{algorithm}
 
+
+\begin{example}
+Przykładowy program \textit{INIT} ustawiający kolor początkowy na biały oraz limit kroków na $1000$.
+\begin{center}
+\begin{lstlisting}
+initialColor(1.0, 1.0, 1.0);
+stepsLimit(1000);
+\end{lstlisting}
+\end{center}
+\end{example}
+
+\begin{example}
+Przykładowy program \textit{TRANSITION} ożywiający komórkę, jeśli ma więcej niż jednego żywego sąsiada.
+\begin{center}
+\begin{lstlisting}
+if(count(0, 1) > 1)
+{
+	newState[0] = 1;
+}
+\end{lstlisting}
+\end{center}
+\end{example}
+
+\begin{example}
+Przykładowy program \textit{COLOR} kolorujący żywe komórki na szaro.
+\begin{center}
+\begin{lstlisting}
+if(state[0] == 1)
+{
+	color[0] = 0.5;
+	color[1] = 0.5.
+	color[2] = 0.5.
+}
+\end{lstlisting}
+\end{center}
+\end{example}
+
 \section{Dane początkowe}
-Dane do programu przekazujemy w pliku o rozszerzeniu \textit{.csv}. Pierwszy wiersz pliku zawiera niebędące liczbami nazwy kolumn. Kolejne wiersze zawierają początkowe informacje o komórkach. Pierwsze dwie kolumny każdego wiersza, opisują współrzędne punktów służących do generowania diagramu Woronoja.  Współrzędne muszą zawierać się w przedziale $[-1, 1]$. Kolejne kolumny zawierające dowolne liczby rzeczywiste opisują początkowy stan komórek. Liczba podanych kolumn definiuje rozmiar stanu komórek.
+Dane do programu przekazujemy w pliku o rozszerzeniu \textit{.csv}. Pierwszy wiersz pliku zawiera niebędące liczbami nazwy kolumn. Kolejne wiersze zawierają początkowe informacje o komórkach. Pierwsze dwie kolumny każdego wiersza, opisują współrzędne punktów służących do generowania diagramu Woronoja.  Współrzędne muszą zawierać się w przedziale $[-1, 1]$. Kolejne kolumny zawierające dowolne liczby rzeczywiste opisują początkowy stan komórek. Liczba podanych kolumn definiuje rozmiar stanu komórek. Liczby rzeczywiste w pliku wejściowym powinny być zapisane w formacie angielskim -- część ułamkowa oddzielona kropką.
+
+\begin{example}
+Przykładowy plik wejściowy opisujący współrzędne punktów oraz stan początkowy zawierający jedną liczbę.
+\begin{center}
+\begin{tabular}{ |c|c|c| } 
+ \hline
+ x & y & alive \\
+  \hline 
+ 0.150832 & -0.972647 & 1 \\ 
+  \hline
+ -0.0799638 & -0.631274 & 0 \\
+ \hline
+  0.535321 & -0.442343 & 0 \\
+ \hline
+  0.307639 & -0.247769 & 0 \\
+ \hline
+  0.704164 & 0.757753 & 1 \\
+ \hline
+ -0.983095 & -0.128225 & 0 \\
+ \hline
+ -0.310227 & 0.320775 & 0 \\
+ \hline
+  -0.998757 & 0.349289 & 1 \\
+ \hline
+  0.155918 & -0.674355 & 1 \\
+ \hline
+   0.240373 & 0.8879 & 0 \\
+ \hline
+\end{tabular}
+\end{center}
+\end{example}
 
 \section{Konstrukcje językowe}
 
+\subsection{Komentarze}
+
+Użytkownik pisząc programy, może umieścić w nich komentarze. Blok komentarza zaczyna się i kończy znakiem \#. 
+
+\begin{example}
+\# Tekst komentarza \#
+\end{example}
+
 \subsection{Zmienne}
-\begin{itemize}
-\item zmienne standardowe -- przechowują liczby typu rzeczywistego. Nazwy zmiennych tworzone są, tak jak w języku $C$. Użytkownik nie deklaruje zmiennych,~a~zmienna bez przypisanej wartości ma domyślnie wartość $0$.
-\item zmienne tablicowe -- przechowują informacje o kolorze i stanie komórek. Dostęp do wartości zmiennych tablicowych wykonujemy przez operator~$[]$~ do~którego podajemy liczby naturalne z przedziału $[0, n)$, gdzie $n$ to rozmiar tablicy. Podczas wykonywania napisanych przez użytkownika programów mamy dostęp~do~następujących zmiennych tablicowych: 
+Zmienne przechowują liczby typu rzeczywistego. Nazwy zmiennych tworzone są, tak jak w języku $C$. Użytkownik nie deklaruje zmiennych,~a~zmienna bez przypisanej wartości ma domyślnie wartość $0$.
+
+\subsection{Atrybuty}
+Atrybuty to krotki przechowujące informacje o kolorze i stanie komórek. Dostęp do wartości atrybutów wykonujemy przez operator~$[]$~ do~którego podajemy liczby naturalne z przedziału $[0, n)$, gdzie $n$ to rozmiar atrybutu. Podczas wykonywania napisanych przez użytkownika programów mamy dostęp~do~następujących atrybutów: 
 	\begin{itemize}
-	\item \textit{color} - tablica o rozmiarze $3$, trzymająca kolor komórki (RGB), wyznaczony ze stanu w programie, \textit{COLOR}. 
-	\item \textit{state} -- tablica z której odczytujemy aktualny stan komórki,
-	\item \textit{newState} -- tablica do której zapisujemy wyliczony nowy stan komórki.
+	\item \textit{color} - krotka o rozmiarze $3$, do której zapisywany jest kolor komórki (RGB), wyznaczony ze stanu w programie, \textit{COLOR}. 
+	\item \textit{state} -- krotka z której odczytujemy aktualny stan komórki,
+	\item \textit{newState} -- krotka do której zapisujemy wyliczony nowy stan komórki.
 	\end{itemize}
-\end{itemize}
-Użytkownik nie może wykorzystywać innych niż podane zmiennych tablicowych. Rozmiar zmiennych \textit{state, newState} zależy od dostarczonych do programu danych początkowych. 
+Użytkownik nie może wykorzystywać innych atrybutów. Rozmiar \textit{state} i \textit{newState} zależy od dostarczonych do programu danych początkowych. 	
 
 \subsection{Wywołanie funkcji}
 Wywołanie funkcji ma następującą formę:
 \begin{align}
-nazwaFunkcji(argumenty oddzielone przecinkami)
+nazwaFunkcji(argument1,[argument2, \dots])
 \end{align}
 
 Argumentami funkcji mogą być liczby rzeczywiste lub naturalne. Wywołanie funkcji może być osobną instrukcją programu (wtedy wartość zwracana przez funkcję jest ignorowana) lub częścią wyrażenia.
@@ -328,10 +418,10 @@ W prezentowanym języku dostępne są operatory binarne: $+, -, * , /, \%, <, >,
 Operatory logiczne zwracają wartości $1$ i $0$, oznaczające odpowiednio prawdę i fałsz.
 Wyrażeniami mogą być następujące konstrukcje:
 \begin{itemize}
-\item liczba rzeczywista lub naturalna
-\item wywołanie funkcji
-\item zmienna lub dostęp do zmiennej tablicowej
-\item operator binarny
+\item liczba rzeczywista lub naturalna,
+\item wywołanie funkcji,
+\item zmienna lub dostęp do wartości atrybutu,
+\item operator binarny.
 \end{itemize}
 Argumentami operatora binarnego mogą być dowolne wyrażenia. Jeśli argumentem operatora binarnego jest inny operator binarny, taki argument musi znajdować~się~w~nawiasach.
 
@@ -341,12 +431,12 @@ Przykładowe poprawne i błędne wyrażenia:
 \item $varName$ -- poprawne wyrażenie,
 \item $1 + varName$ -- poprawne wyrażenie,
 \item $1.0 + (state[1] + varName)$ -- poprawne wyrażenie,
-\item $1 + 2 * 4$ -- błędne wyrażenie.
+\item $1 + 2 * 4$ -- błędne wyrażenie, $1 + 2$ lub $2 * 4$ powinno znajdować się w nawiasie.
 \end{itemize}
 \end{example}
 
 \section{Przypisania}
-Wyrażenia możemy przypisywać do zmiennych oraz dostępnych zmiennych tablicowych. Przypisanie musi być zakończone średnikiem.
+Wyrażenia możemy przypisywać do zmiennych oraz atrybutów \textit{color} i \textit{newState}. Przypisanie musi być zakończone średnikiem.
 
 \begin{example}
 Przykładowe poprawne przypisania:
@@ -405,14 +495,98 @@ Biblioteka PEGTL pozwala na tworzenie gramatyk przy użyciu prostych reguł:
 
 Wszystkie pozostałe dostępne reguły są kombinacjami podanych wyżej. Po zdefiniowaniu gramatyki, jako wejście parsera przekazywany jest ciąg znaków wczytany z plików w katalogu \textit{programs}. Z wczytanych programów usuwane są wszystkie białe znaki, co powoduje, że użytkownik może z nich dowolnie korzystać podczas pisania programów.
 
+\begin{example}
+Reguły definiujące liczby.
+\begin{center}
+\begin{lstlisting}
+struct positiveInteger : plus < digit > {};
+
+struct integer : seq <
+	opt<one<'-'>>,
+	positiveInteger
+> {};
+
+struct floatingPoint : seq <
+	opt < one < '-' > >,
+	plus < digit >,
+	one < '.' >,
+	plus < digit >
+> {};
+\end{lstlisting}
+\end{center}
+\end{example}
+
+\begin{itemize}
+\item Dodatnia liczba całkowita zdefiniowana jest przez niepusty ciąg cyfr.
+\item Liczba całkowita zdefiniowana jest jako dodatnia liczba całkowita poprzedzona opcjonalnym minusem.
+\item Liczba rzeczywista zdefiniowana jest jako opcjonalny minus, po którym następuje niepusty ciąg cyfr, kropka oraz ponownie niepusty ciąg cyfr.
+\end{itemize}
+
+\section{Klasy Instruction i Expression}
+
+Abstrakcyjna klasa \textit{Expression} jest podstawą struktury wyrażeń zdefiniowanych w pliku \textit{Evaluation.h}. \textit{Expression} zawiera wirtualną metodę \textit{calculate}, która jest implementowana przez klasy dziedziczące. Pozwala to na łatwe obliczanie wartości rozbudowanych wyrażeń zawartych w programach.
+
+\begin{example}
+Klasa dziedzicząca po \textit{Expression} reprezentująca liczbę rzeczy rzeczywistą.
+\begin{center}
+\begin{lstlisting}
+class Number : public Expression {
+    float number;
+public:
+    Number(float num) : number(num) { }
+    float calculate()
+    {
+        return number;
+    }
+    ~Number() { }
+};
+\end{lstlisting}
+\end{center}
+\end{example}
+
+Abstrakcyjna klasa \textit{Instruction}, zawiera wirtualną metod \textit{evaluate}, która jest odpowiedzialna za wykonanie danej instrukcji. Wszystkie klasy dziedziczące po \textit{Instruction} implementują \textit{evaluate}. 
+
+\begin{example}
+Klasa dziedzicząca po \textit{Instruction} reprezentująca blok instrukcji do wykonania. \textit{Block} wykorzystywana jest między innymi w klasie reprezentującej instrukcję warunkową.
+\begin{center}
+\begin{lstlisting}
+class Block : public Instruction {
+    std::vector<Instruction*> block;
+public:
+    Block(std::vector<Instruction*> b) : block(b) { }
+    void evaluate()
+    {
+        for(auto ins: block)
+            ins->evaluate();
+    }
+    ~Block() { }
+};
+\end{lstlisting}
+\end{center}
+\end{example}
+
+Struktura klas dziedziczących po \textit{Expression} i \textit{Instruction} pozwala na budowanie programów, które zawierają w sobie zasady w jaki sposób mają być wykonane. Dzięki takiemu rozwiązaniu, interpretowanie drzewa zwróconego przez bibliotekę \textit{PEGTL} jest wykonywane tylko raz na początku symulacji. 
+
 \section{Ewaluacja programów}
-Po uzyskaniu abstrakcyjnych drzew rozbiorów programów \textit{INIT, TRANSITION, COLOR} zostaną one ewaluowane w strukturze \textit{Game}, która odpowiedzialna jest~za~wykonywanie symulacji. Progra, \textit{INIT} ewaluowany jest jednokrotnie, przed rozpoczęciem symulacji. \textit{COLOR} i \textit{TRANSITION} ewaluowane są wielokrotnie, ze zmiennymi tablicowymi ustawionymi na dane odpowiadające aktualnie przetwarzanej komórce diagramu. 
+Po uzyskaniu abstrakcyjnych drzew rozbiorów programów \textit{INIT, TRANSITION, COLOR} zostaną one przetłumaczone na drzewo klas dziedziczących po klasach \textit{Expression} i \textit{Instruction}. Przetłumaczone programy są wywoływane w strukturze \textit{Game}, która odpowiedzialna jest~za~wykonywanie symulacji. Progra, \textit{INIT} ewaluowany jest jednokrotnie, przed rozpoczęciem symulacji. \textit{COLOR} i \textit{TRANSITION} ewaluowane są wielokrotnie, ze atrybutami ustawionymi na dane odpowiadające aktualnie przetwarzanej komórce diagramu. 
 
 Wyrażenia ewaluowane są rekurencyjnie, w sposób gorliwy. Oznacza to, że lewa strona wyrażenia jest wyliczana w całości, przed wyliczeniem prawej strony. Nazwy użytych w programach zmiennych przechowywane są w kontenerze \textit{variable} będącym \textit{unoredered\_map}, ze standardowej biblioteki języka \textit{C++}. Wszystkie przypisane do zmiennych wartości są czyszczone po wykonaniu każdego programu \textit{COLOR} i \textit{TRANSITION}.
 
 \chapter{Wizualizacja}
+\label{sec:openGl}
+Pierwszym podejściem do wyświetlania symulacji było użycie Legacy OpenGL, który pozwala na wyświetlanie prostych kształtów na ekranie, bez użycia shaderów (programów uruchamianych na karcie graficznej, które opisują w jaki sposób na ekranie wyświetlany jest obraz) i dodatkowych struktur do przesyłania danych. Niestety takie rozwiązanie wiąże się z koniecznością przekazywania kompletu informacji o wyglądzie planszy po każdym kroku symulacji. Jest to bardzo nieefektywne, ponieważ podczas trwania programu kolory wielu pól zmieniają się rzadko, a krawędzie wielokątów pozostają niezmienne. Fakt ten, można wykorzystać stosując Vertex Buffer Object -- VBO, który pozwala na przesłanie danych raz oraz późniejsze aktualizowanie ich jeśli zajdzie taka potrzeba.
 
-Wizualizacja symulacji odbywa się przy użyciu OpenGL API. Wyświetlanie obrazu podzielone jest na dwie części: wyświetlanie krawędzi wielokątów oraz kolorowanie wielokątów. Dane do wyświetlania ładowane są w funkcji \textit{createbuffers} struktury \textit{Board}, a za aktualizowanie wyglądu planszy, po wykonaniu kroku symulacji, odpowiedzialna  jest funkcja \textit{print}. Dane wyświetlenia przekazywane są do OpenGl'a przez obiekty \textit{vertex buffer} -- VBO.
+Wyświetlanie obrazu podzielone jest na dwie części: wyświetlanie krawędzi wielokątów oraz kolorowanie wielokątów. Dane do wyświetlania ładowane są w funkcji \textit{createBuffers} struktury \textit{Board}, a za aktualizowanie wyglądu planszy, po wykonaniu kroku symulacji, odpowiedzialna  jest funkcja \textit{print}. 
+
+\section{Shadery}
+
+Shadery podzielone są na dwa rodzaje:
+\begin{itemize}
+
+\item Vertex shader -- obsługuję wyświetlanie wierzchołków danej figury, określając ich położenie oraz kolor.
+\item Fragment shader -- opisuje w jaki sposób wyświetlane jest pole pomiędzy wierzchołkami. Kolor który przekazywany jest na wejściu fragment shadera jest interpolacją koloru wierzchołków figury. W celu uzyskania jednolitego koloru pola, kolor wszystkich wierzchołków musi być taki sam.
+
+\end{itemize}
 
 \section{Wyświetlanie krawędzi}
 
@@ -431,7 +605,7 @@ void main()
 \end{center}
 
 \subsection{Fragment shader}
-Shader wyświetlający ciało krawędzi w czarnym kolorze.
+Shader wyświetlający ciało krawędzi w czarnym kolorze, ignorując kolor wierzchołków.
 \begin{center}
 \begin{lstlisting}
 precision mediump float;
@@ -445,7 +619,7 @@ void main()
 
 \section{Kolorowanie pól diagramu}
 
-Pola diagramów będące wielokątami wypukłymi podzielone zostały na trójkąty. Wierzchołkami każdego z trójkątów są dwa końce jednej z krawędzi oraz punkt będący centrum danego pola. Wielokąt przekazywany jest do VBO jako zbiór trójkątów. Każdy trójkąt reprezentowany jest przez trzy punkty razem z ich kolorami. Kolor pola wyznaczany jest przez OpenGl jako interpolacja kolorów wierzchołków figury. Podanie wszystkich punktów wielokąta w jednakowym kolorze powoduje jednolity kolor całego pola. Podczas trwania symulacji kolory pól ulegają zmianie. W~takim przypadku w VBO zmieniany jest kolor tylko jednego wielokąta, z wykorzystaniem funkcji \textit{glBufferSubData}.
+Pola diagramów będące wielokątami wypukłymi podzielone zostały na trójkąty. Wierzchołkami każdego z trójkątów są dwa końce jednej z krawędzi oraz punkt będący centrum danego pola. Wielokąt przekazywany jest do VBO jako zbiór trójkątów. Każdy trójkąt reprezentowany jest przez trzy punkty razem z ich kolorami. Podczas trwania symulacji kolory pól ulegają zmianie. W~takim przypadku w VBO aktualizowany jest kolor tylko zmienionych wielokątów, z wykorzystaniem funkcji \textit{glBufferSubData}.
 
 \subsection{Vertex shader}
 Shader ustalający pozycję wierzchołków trójkąta oraz ustawiający ich kolor.
@@ -463,8 +637,6 @@ void main()
 \end{lstlisting}
 \end{center}
 
-\newpage
-
 \subsection{Fragment shader}
 Shader wyświetlający ciało trójkąta w kolorze będącym interpolacją kolorów wierzchołków.
 \begin{center}
@@ -479,7 +651,143 @@ void main()
 \end{lstlisting}
 \end{center}
 
+\chapter{Przykładowe symulacje}
+
+\section{Pulsujące pierścienie i pechowe pola}
+
+\subsection{Stan}
+Stan opisany jest przez dwie liczby.
+\begin{itemize}
+\item state[0] -- opisuje, czy komórka jest żywa,
+\item state[1] -- licznik, mówiący od kiedy komórka powinna być żywa.
+\end{itemize}
+
+\subsection{TRANSITION}
+
+\begin{center}
+\begin{lstlisting}
+cond1 = count(0, 1.0) > 0;
+if(cond1 && (random(0.0, 1.0) > 0.5))
+{
+    newState[0] = 1;
+}
+if(cond1)
+{
+    newState[1] = state[1] + 1;
+}
+if(state[1] > 20)
+{
+    newState[1] = 0;
+    newState[0] = 0;
+} 
+\end{lstlisting}
+\end{center}
+
+Program sprawdza, czy pole ma żywego sąsiada, w takim przypadku startuje licznik oraz  z prawdopodobieństwem $1/2$ ożywia dane pole. Jeśli licznik przekroczy $20$, pole umiera i licznik się zeruje.
+
+\subsection{COLOR}
+
+\begin{center}
+\begin{lstlisting}
+if(state[0] == 0)
+{
+    # przypadek 1. #
+    color[0] = 1.0;
+    color[1] = 1.0;
+}
+if(state[0])
+{
+    # przypadek 2. #
+    color[0] = 0.1;
+    color[1] = 0.8;
+}
+if((state[1] > 1) && (state[0] == 0))
+{
+    # przypadek 3. #
+    color[0] = 0.9;
+    color[1] = 0.0;
+}
+\end{lstlisting}
+\end{center}
+Program \textit{COLOR}, rozpatruje trzy przypadki: 
+\begin{itemize}
+\item pole jest martwe -- kolor biały,
+\item pole jest żywe -- kolor niebieski,
+\item pole jest martwe, ale od więcej niż jednego kroku powinno być żywe -- kolor fioletowy.
+\end{itemize}
+
+\begin{example}
+Przykładowy krok symulacji dla $10000$ komórek. Na początku żywe komórki ustawione zostały w $4$ różnych pozycjach.
+	\begin{center}
+		\includegraphics[width=0.6\textwidth]{sim1}
+	\end{center}
+\end{example}
+
+\section{Zalewanie przeszkód}
+
+\subsection{Stan}
+Stan opisany jest przez jedną liczbę -- \textit{state[0]}.
+\begin{itemize}
+\item state[0] ma wartość 1 -- czy komórka jest żywa,
+\item state[0] ma wartość 0 komórka jest martwa.
+\item state[0] ma wartość 2 komórka jest przeszkodą.
+\end{itemize}
+
+\subsection{INIT}
+
+Program \textit{INIT} wywołuje funkcję \textit{initialColor}, ustawiając kolor początkowy na biały.
+
+\subsection{TRANSITION}
+
+\begin{center}
+\begin{lstlisting}
+skipState(0, 1);
+if(count(0, 1) && (state[0] < 2))
+{
+	newState[0] = 1;
+}
+\end{lstlisting}
+\end{center}
+
+Program sprawdza, czy pole nie jest przeszkodą i ma żywego sąsiada, w takim przypadku pole ożywa. Jeśli pole jest żywe, pomijane jest wywołanie programu \textit{COLOR}.
+
+\subsection{COLOR}
+
+\begin{center}
+\begin{lstlisting}
+if(state[0] == 1)
+{
+	color[0] = 0.0;
+	color[1] = 0.0;
+}
+if(state[0] == 2)
+{
+	color[0] = 0.5;
+	color[1] = 0.5;
+	color[2] = 0.5;
+}
+\end{lstlisting}
+\end{center}
+Program \textit{COLOR}, rozpatruje trzy przypadki: 
+\begin{itemize}
+\item pole jest martwe -- kolor biały,
+\item pole jest żywe -- kolor niebieski,
+\item pole jest przeszkodą -- kolor szary.
+\end{itemize}
+
+
+\begin{example}
+Przykładowy krok symulacji dla $50000$ komórek. Przeszkody ułożone zostały w krzyż.	
+	
+	\begin{center}
+		\includegraphics[width=0.6\textwidth]{sim2}
+	\end{center}
+\end{example}
+
+\section{Symulacja pandemii}
+
 \chapter{Inne narzędzia}
+\label{sec:tools}
 Gra w życie zyskała dużą popularność. Od czasu jej publikacji powstało wiele narzędzi pozwalających przeprowadzać symulację różnych jej wariantów. Znaleźć można zarówno bardzo proste, interaktywne narzędzia pozwalające na przedstawienie podstawowych zasad działania gry oraz zaprezentowanie zachodzących zjawisk takich jak oscylatory, jak i zaawansowane programy naukowe, które wykonują tysiące kroków na sekundę i pozwalają w prawie dowolny sposób modyfikować zasady gry.
 \section{PlayGameOfLife}
 Jest to narzędzie symulujące podstawową grę w życie przedstawioną przez Conwaya. Dane wprowadzane są przez użytkownika ręcznie, zaznaczając żywe pola na interaktywnej planszy. Symulację przeprowadzamy online, pod adresem \url{https://playgameoflife.com/}. Dodatkowe możliwości:
@@ -490,14 +798,36 @@ Jest to narzędzie symulujące podstawową grę w życie przedstawioną przez Co
 \end{itemize}
 
 \section{Golly}
-Golly \cite{golly}, to narzędzie stworzone do symulacji automatów komórkowych. Skrypty obsługujące symulację są pisane w językach \textit{Python} lub \textit{Lua}. Dzięki zastosowaniu algorytmu \textit{hashlife} \cite{hashlife} Golly jest w stanie przetwarzać duże struktury składające~się~z~milionów komórek. Przykładami pokazującymi możliwości tego narzędzia są zaimplementowane przy jego użyciu systemu komputerowe wykorzystujące równoważność gry w życie z maszyną Turinga.
+Golly \cite{golly}, to narzędzie stworzone do symulacji automatów komórkowych. Skrypty obsługujące symulację są pisane w językach \textit{Python} lub \textit{Lua}. Dzięki zastosowaniu algorytmu \textit{hashlife} \cite{hashlife} Golly jest w stanie przetwarzać duże struktury składające~się~z~milionów komórek. Przykładami pokazującymi możliwości tego narzędzia są zaimplementowane przy jego użyciu systemu komputerowe wykorzystujące równoważność gry w życie z maszyną Turinga \cite{rendell}.
+
+
+\begin{example}
+Maszyna Turinga stworzona przez Paula Rendella.
+	\begin{center}
+		\includegraphics[width=0.7\textwidth]{GollyTuringMachine}
+	\end{center}
+\end{example}
 
 Golly dostarcza także dużą bibliotekę przykładowych gier w życie, prezentujących jej najciekawsze zachowania.
 
+\begin{example}
+Jeden z przykładów zaprezentowanych przez twórców -- gra w życie odbywająca się na planszy złożonej z sześciokątów. 
+	\begin{center}
+		\includegraphics[width=0.7\textwidth]{hexaGolly}
+	\end{center}
+\end{example}
 
 \subsection{Algorytm hashlife}
-Algorytm wykorzystuje ważną własność automatów podobnych do gry w życie. Nawet pozornie losowe struktury automatów komórkowych, mogą zamienić~w~się~zbiór oscylatorów i niezmiennych fragmentów. Plansza reprezentowana jest przez drzewo, którego wierzchołki mają dokładnie czterech synów. Algorytm zapamiętuje, w jaki sposób wykonywane są dane wzorce ułożeń komórek. Wykorzystując technikę hashowania, powtarzające się wzorce w drzewie są wyliczane tylko raz, co~pozwala ograniczyć niezbędne obliczenia. Istotnymi minusami, są wykorzystywana przez algorytm pamięć oraz początkowy czas działania, niezbędny do zgromadzenia danych o symulacji.
+Algorytm \textit{hashlife} reprezentuje planszę jako drzewo, którego każdy wierzchołek ma czterech synów. Początkowo plansza dzielona jest na cztery równe kwadratowe części, następnie procedura powtarzana jest dla czterokrotnie mniejszych części planszy. Rozpoznając powtarzające się fragmenty w otrzymanym drzewie, niektóre krawędzie są przepinane w taki sposób, żeby występujące na planszy wzory ułożeń komórek występowały w strukturze tylko raz. Pozwala to zaoszczędzić wykorzystywaną przez algorytm pamięć. Wynik przekształcenia każdego wierzchołka wyliczany jest jednorazowo, a następnie zapamiętywany. Algorytm wykorzystuje ważną własność automatów podobnych do gry w życie. Nawet pozornie losowe struktury automatów komórkowych, mogą zamienić~w~się~zbiór oscylatorów i niezmiennych fragmentów. Istotnymi minusami, są wykorzystywana przez algorytm pamięć oraz początkowy czas działania, niezbędny do zgromadzenia danych o symulacji.
 
+\chapter{Podsumowanie}
+
+Pierwszą wyzwaniem podczas pracy nad projektem była odpowiednia implementacja algorytmu \textit{Fortunea}, generującego diagramy Woronoja. Niezbędna geometria wymaga wykonywania obliczeń na liczbach rzeczywistych oraz rozpatrzenie wielu przypadków brzegowych. Koncepcja wszystkich obliczeń jest bardzo prosta ale liczba obsługiwanych podczas trwania algorytmu krawędzi i parabol sprawia, że nawet drobny błąd obliczeniowy, może prowadzić do całkowicie zniekształconego diagramu. Obecna wersja implementacji pozwala na bezproblemowe generowanie diagramu posiadającego więcej niż $100000$ pól w czasie kilku sekund. 
+
+
+Podczas rozbudowywania programu natknąłem się na kolejny duży problem. Pierwsza wersja wizualizacji wykorzystująca \textit{legacy OpenGl} okazała się być zbyt wolna. Symulacja prostej gry na planszy zawierającej kilka tysięcy pól była niepłynna, a oczekiwanie na dalsze kroki zbyt długie. Problem udało się rozwiązać wykorzystując współczesne techniki dostępne w OpenGl. Przesyłając informacje o wyglądzie planszy tylko w momencie, gdy jest to konieczne pozwoliło osiągnąć płynność nawet dużych symulacji. W tym miejscu pozostaje potencjał do poprawy. Wykorzystując \textit{Vertex Buffer Array}, możliwe jest zredukowanie redundancji przesyłanych danych, co powinno dodatkowo przyśpieszyć wizualizację.
+
+Kontynuacja o parsowaniu i wewnętrznej reprezentacji drzewa...
 
 \nocite{woronoj}
 \bibliographystyle{plain}
