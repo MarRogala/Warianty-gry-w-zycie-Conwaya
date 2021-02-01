@@ -784,7 +784,96 @@ Przykładowy krok symulacji dla $50000$ komórek. Przeszkody ułożone zostały 
 	\end{center}
 \end{example}
 
-\section{Symulacja pandemii}
+\section{Różne techniki}
+Kolejny przykład demonstruje użycie kilku technik w programie \textit{TRANSITION}. 
+
+Opis stanu:
+\begin{itemize}
+\item state[0], state[2] -- dyskretny stan pola,
+\item state[1] -- losowa właściwości pola,
+\item state[3] -- koniunkcja state[0] i state[2], przydatna do użycia zasady włączeń i wyłączeń.
+\end{itemize}
+
+\subsection{COLOR}
+Program \textit{COLOR} rozpatruje trzy przypadki, przyporządkowując kolory: czerwony, pomarańczowy i żółty.
+
+\begin{center}
+\begin{lstlisting}
+if((state[0] > 0) && (state[2] == 0))
+{
+    color[0] = 1.0;
+    color[1] = 0.0;
+    color[2] = 0.0;
+}
+if((state[0] > 0) && (state[2] == 1))
+{
+    color[0] = 1.0;
+    color[1] = 0.5;
+    color[2] = 0.0;
+}
+if((state[0] < 1) && (state[2] == 1))
+{
+    color[0] = 1.0;
+    color[1] = 1.0;
+    color[2] = 0.0;
+}
+\end{lstlisting}
+\end{center}
+
+\subsection{TRANSITION}
+\begin{center}
+\begin{lstlisting}
+const1 = 0.5;
+const2 = 0.1;
+const3 = 1.5; 
+ 
+state1 = count(0, 1);
+state3 = count(3, 1);
+dif = state1 - state3;
+ 
+if((state1 > 0) && (random(0, 1) > const2))
+{
+    newState[2] = 1;
+}
+ 
+ppd = 0.7;
+if(state[1] > const1)
+{
+    ppd = 0.2;
+}
+ 
+cond = ((dif + 1.0) * random(0.0, 1.0)) > const3;
+ 
+if(cond && (state[0] == 0))
+{
+    newState[0] = 1;
+}
+ 
+if((state[0] == 1) && (random(0, 1) > const2))
+{
+    newState[2] = 1;
+    newState[3] = 1;
+}
+\end{lstlisting}
+\end{center}
+
+Przydatne techniki:
+\begin{itemize}
+\item  Deklaracja stałych wartości na początku programu.
+\item Użycie dodatkowej wartości w stanie do trzymania koniunkcji wartości.
+\item Upraszczanie wyrażeń przez przypisywanie ich części do zmiennych.
+\item Losowanie właściwości pola przez podawanie losowych początkowych wartości stanu (podanych w pliku wejściowym).
+\end{itemize}
+
+Przedstawiona symulacja jest bardzo podatna na zmiany stałych wartości w programie. Najciekawsze wizualnie efekty uzyskane są przez powyższe ustawienie zmiennych.
+
+\begin{example}
+Przykładowy krok symulacji dla $20000$ komórek. Pola koloru pomarańczowego rozprzestrzeniają się w losowych kierunkach.
+	\begin{center}
+		\includegraphics[width=0.6\textwidth]{sim3}
+	\end{center}
+\end{example}
+
 
 \chapter{Inne narzędzia}
 \label{sec:tools}
@@ -822,12 +911,18 @@ Algorytm \textit{hashlife} reprezentuje planszę jako drzewo, którego każdy wi
 
 \chapter{Podsumowanie}
 
+\section{Woronoja}
 Pierwszą wyzwaniem podczas pracy nad projektem była odpowiednia implementacja algorytmu \textit{Fortunea}, generującego diagramy Woronoja. Niezbędna geometria wymaga wykonywania obliczeń na liczbach rzeczywistych oraz rozpatrzenie wielu przypadków brzegowych. Koncepcja wszystkich obliczeń jest bardzo prosta ale liczba obsługiwanych podczas trwania algorytmu krawędzi i parabol sprawia, że nawet drobny błąd obliczeniowy, może prowadzić do całkowicie zniekształconego diagramu. Obecna wersja implementacji pozwala na bezproblemowe generowanie diagramu posiadającego więcej niż $100000$ pól w czasie kilku sekund. 
 
+\section{Wizualizacja}
+Podczas rozbudowywania programu natknąłem się na kolejny duży problem. Pierwsza wersja wizualizacji wykorzystująca \textit{legacy OpenGl} okazała się być zbyt wolna. Symulacja prostej gry na planszy zawierającej kilka tysięcy pól była niepłynna, a oczekiwanie na dalsze kroki zbyt długie. Problem udało się rozwiązać wykorzystując współczesne techniki dostępne w OpenGl. Przesyłanie informacji o wyglądzie planszy tylko w momencie, gdy jest to konieczne pozwoliło osiągnąć płynność nawet dużych symulacji. W tym miejscu pozostaje potencjał do poprawy. Wykorzystując \textit{Vertex Buffer Array}, możliwe jest zredukowanie redundancji przesyłanych danych, co powinno dodatkowo przyśpieszyć wizualizację.
 
-Podczas rozbudowywania programu natknąłem się na kolejny duży problem. Pierwsza wersja wizualizacji wykorzystująca \textit{legacy OpenGl} okazała się być zbyt wolna. Symulacja prostej gry na planszy zawierającej kilka tysięcy pól była niepłynna, a oczekiwanie na dalsze kroki zbyt długie. Problem udało się rozwiązać wykorzystując współczesne techniki dostępne w OpenGl. Przesyłając informacje o wyglądzie planszy tylko w momencie, gdy jest to konieczne pozwoliło osiągnąć płynność nawet dużych symulacji. W tym miejscu pozostaje potencjał do poprawy. Wykorzystując \textit{Vertex Buffer Array}, możliwe jest zredukowanie redundancji przesyłanych danych, co powinno dodatkowo przyśpieszyć wizualizację.
+\section{Język opisu gry}
+Grę w życie zaprezentowaną przez Conwaya opisują trzy liczby. Taka prosta reprezentacja zasad, utrudniona jest przez nieregularność planszy, dlatego w przedstawionym projekcie, zasady implementowane są w prostym języku opisu gry. Parsowanie przygotowanych przez użytkownika programów, odbywa się przy użyciu biblioteki \textit{PEGTL}. Wynikiem parsowania jest abstrakcyjne drzewo składni języka złożone z dostarczonych struktur. Odpowiednie interpretowanie wynikowego drzewa pozwala na wykonanie programów zawierających reguły gry. Niestety, takie rozwiązanie okazało się być zbyt wolne. Cały zysk, otrzymany przez poprawę wizualizacji, został wykorzystany na interpretowanie programów. 
 
-Kontynuacja o parsowaniu i wewnętrznej reprezentacji drzewa...
+Proces wykonywania symulacji został przyśpieszony, tłumacząc otrzymane podczas parsowania drzewa, na wewnętrzną reprezentację będącą drzewem opierającym się na dwóch abstrakcyjnych klasach \textit{Expression} i \textit{Instruction} oraz klasach po niech dziedziczących. Takie rozwiązanie pozwala na jednorazowe rozpatrywanie wielu przypadków, niezbędnych do interpretacji programów napisanych przez użytkownika. Po konwersji do nowej reprezentacji, wszystkie informacje potrzebne do wykonania instrukcji, są już dostępne w wierzchołkach drzewa.
+
+Język opisu gry jest też częścią projektu, w której są największe możliwości rozwoju. Dodając nowe reguły do gramatyki parsowanego języka oraz nowe klasy do struktury reprezentującej zinterpretowane drzewo, można w łatwy sposób dodać nowe funkcjonalności. Jednym z przykładów funkcjonalności niewprowadzonych do języka są stałe wartości definiowane w programie \textit{INIT} lub dodatkowe funkcje matematyczne. Oczywiście, możliwości jest więcej i późniejsze rozwijanie zależne jest od potrzeb użytkowników.
 
 \nocite{woronoj}
 \bibliographystyle{plain}
