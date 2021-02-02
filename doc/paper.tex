@@ -81,6 +81,7 @@ Po rozpatrzeniu wszystkich wydarzeń wynikiem działania algorytmu są krawędzi
 
 \chapter{Diagramy Woronoja}
 
+Rozdział opisuje podział płaszczyzny zwany diagramem Woronoja, oraz algorytm Fortunea służący do szybkiego generowania diagramów. Uzupełnieniem rozdziału jest krótkie przedstawienie alternatywnych algorytmów.
 \section{Definicja}
 Niech $S$ będzie skończonym zbiorem parami różnych dwuwymiarowych punktów o współrzędnych rzeczywistych. Punkty zbioru $S$, nazywane będą centrami.
 
@@ -105,17 +106,35 @@ Przykładowy diagram Woronoja z zaznaczonymi $10$ centrami.
 Jednym ze sposobów  generowania diagramów Woronoja jest algorytm zaproponowany przez Johna Fortunea oparty na technice zamiatania \cite{miotla}. 
 
 \begin{definition}
-\textit{Miotłą} nazywamy poziomą linię poruszającą się od dołu do góry planszy. Wszystkie punkty poniżej miotły zostały już rozpatrzone przez algorytm, natomiast punkty powyżej miotły zostaną rozpatrzone, gdy miotła dojdzie do ich wysokości.
+\textit{Miotłą} nazywamy poziomą linię poruszającą się od dołu do góry planszy. Miotła napotyka wydarzenia, w kolejności ich występowania. Wszystkie wydarzenia poniżej miotły zostały już rozpatrzone przez algorytm, natomiast te powyżej miotły zostaną rozpatrzone, gdy miotła dojdzie do ich wysokości.
 \end{definition}
 
 Najważniejszą strukturą algorytmu jest towarzysząca miotle linia brzegowa. Składa się ona z parabol, rozpinających się nad rozpatrzonymi przez miotłę punktami oraz nieukończonych krawędzi diagramu. W czasie trwania algorytmu parabole rozszerzają się, a ich przecięcia wyznaczają krawędzie. Parabola, która tworzy pole z centrum $p = (x_p, y_p)$ jest zbiorem $\{ x \quad | \quad x \in \mathbb{R}^2 \land dist(p, x) = dist(p_s, x) \}$, gdzie przez $p_s$ oznaczamy punkt na miotle znajdujący się najbliżej $x$. 
 
-\begin{remark}
-Punkt przecięcia sąsiednich parabol jest równo odległy od centrów, które definiują te parabole.
-\end{remark}
+Poruszająca się przez planszę miotła napotyka dwa rodzaje wydarzeń.
+
+\begin{itemize}
+	\item site event -- dotarcie do nowego puntu ze zbioru $S$
+	\item circle event -- zniwelowanie jednej z parabol w linii brzegowej
+\end{itemize}
+
+\begin{example}
+Przykładowe kroki podczas trwania algorytmu.
+
+	\begin{center}
+		\includegraphics[width=0.35\textwidth]{fortune2}
+		\includegraphics[width=0.35\textwidth]{fortune3}
+	\end{center}
+	\begin{center}
+		\includegraphics[width=0.35\textwidth]{fortune4}
+		\includegraphics[width=0.35\textwidth]{fortune5}
+	\end{center}
+\end{example}
+
+Każda parabole, zdefiniowana jest przez miotłę i jeden z punktów, będących centrami pól diagramu. Punkty leżące na paraboli są w równej odległości od centrum pola które je definiuje oraz najbliższego punktu na miotle.
 
 Wyznaczymy wzór $f(x)$ parabol znajdujących się w linii brzegowej.
-Niech~$y_s$~oznacza wysokość, na której znajduje się miotła, a $(x_c, y_c)$ będzie centrum pola, które tworzy parabola. 
+Niech~$y_s$~oznacza wysokość, na której znajduje się miotła, a $(x_c, y_c)$ będzie centrum pola, które definiuje parabolę. 
 
 \begin{align*}
 	dist((x_c, y_c), (x, f(x))) &= dist((x, y_s) (x, f(x))) \\
@@ -130,16 +149,16 @@ Niech~$y_s$~oznacza wysokość, na której znajduje się miotła, a $(x_c, y_c)$
 
 Korzystając z otrzymanego wzoru, możemy w łatwy sposób wyliczać między innymi przecięcia parabol z innymi obiektami w linii brzegowej.
 
-Poruszająca się przez planszę miotła napotyka dwa rodzaje wydarzeń.
-
-\begin{itemize}
-	\item site event -- dotarcie do nowego puntu ze zbioru $S$
-	\item circle event -- zniwelowanie jednej z parabol w linii brzegowej
-\end{itemize}
-
 \subsubsection{Site event -- obsługa}
 \label{sec:site}
-Napotykając nowe centrum, musimy dodać do linii brzegowej nową parabolę, dzieląc jedną z istniejących na dwie części. W tym celu przeszukujemy linię brzegową, poszukując paraboli leżącej bezpośrednio pod nowym centrum. To przeszukiwanie będzie miało kluczowy wpływ na złożoność algorytmu. 
+Dodawanie nowego centrum do algorytmu, oznacza uwzględnienie go w wynikowym diagramie. Wszystkie punkty, które znajdują się pod linią miotły, zostały już uwzględnione w działaniu algorytmu. Napotykając nowe centrum, musimy dodać do linii brzegowej nową parabolę, dzieląc jedną z istniejących na dwie części. W tym celu przeszukujemy linię brzegową, poszukując paraboli leżącej bezpośrednio pod nowym centrum. To przeszukiwanie będzie miało kluczowy wpływ na złożoność algorytmu. 
+
+Dodając nowe pole, zmieniamy w linii brzegowej jedną parabolę (leżącą pod nowym centrum) na następujący ciąg elementów.
+
+\begin{align}
+ 	P1, K1, P2, K2, P3
+\end{align}
+Gdzie $P1, P3$ to kopie rozdzielanej paraboli. $P2$ to nowa parabola utworzona przez dodawane centrum i miotłę. $K1, K2$ to nowe krawędzie rozszerzające się w przeciwnych kierunkach. Punktem startowym dodawanych krawędzi jest punkt na rozdzielanej paraboli znajdujący się pod nowym centrum.
 
 \begin{example}
 	Zmienione elementy linii brzegowej po obsłużeniu nowego centrum.
@@ -148,12 +167,6 @@ Napotykając nowe centrum, musimy dodać do linii brzegowej nową parabolę, dzi
 		\includegraphics[width=0.6\textwidth]{ExampleSiteEvent}
 	\end{center}
 \end{example}
-
-Odnaleziona parabola zostaję zastąpiona ciągiem elementów:
-\begin{align}
- 	P1, K1, P2, K2, P3
-\end{align}
-Gdzie $P1, P3$ to kopie rozdzielanej paraboli. $P2$ to nowa parabola utworzona przez dodawane centrum. $K1, K2$ to nowe krawędzie rozszerzające się w przeciwnych kierunkach. Punktem startowym dodawanych krawędzi jest punkt na rozdzielanej paraboli znajdujący się pod nowym centrum.
 
 Pozostaje sprawdzić, czy parabole, które dodaliśmy do linii brzegowej, zostaną kiedyś zniwelowane i czy konieczne jest dodanie odpowiednich wydarzeń. 
 Parabola zostanie zniwelowana przez swoich sąsiadów, jeśli zachodzą dwa warunki:
