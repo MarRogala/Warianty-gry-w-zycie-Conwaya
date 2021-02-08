@@ -797,13 +797,13 @@ Przykładowy krok symulacji dla $50000$ komórek. Przeszkody ułożone zostały 
 	\end{center}
 \end{example}
 
-\section{Różne techniki}
+\section{Przydatne techniki}
 Kolejny przykład demonstruje użycie kilku technik w programie \textit{TRANSITION}. 
 
 Opis stanu:
 \begin{itemize}
-\item state[0], state[2] -- dyskretny stan pola,
-\item state[1] -- losowa właściwości pola,
+\item state[0], state[2] -- liczby naturalne przechowujące informację o stanie pola,
+\item state[1] -- losowa liczba opisująca właściwość pola,
 \item state[3] -- koniunkcja state[0] i state[2], przydatna do użycia zasady włączeń i wyłączeń.
 \end{itemize}
 
@@ -848,20 +848,16 @@ if((state1 > 0) && (random(0, 1) > const2))
 {
     newState[2] = 1;
 }
- 
 ppd = 0.7;
 if(state[1] > const1)
 {
     ppd = 0.2;
 }
- 
 cond = ((dif + 1.0) * random(0.0, 1.0)) > const3;
- 
 if(cond && (state[0] == 0))
 {
     newState[0] = 1;
 }
- 
 if((state[0] == 1) && (random(0, 1) > const2))
 {
     newState[2] = 1;
