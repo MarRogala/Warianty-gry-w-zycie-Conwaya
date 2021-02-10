@@ -258,10 +258,6 @@ void Game::evaluateTRANSITIONProgram(int field)
 
 void Game::loadData(std::string fileName)
 {
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_real_distribution<double> dist(-0.0001, 0.0001);
-
     std::ifstream inputFile("./input/" + fileName);
     if(!inputFile.is_open() || !inputFile.good())
     {
@@ -340,7 +336,7 @@ void Game::loadData(std::string fileName)
     }
     for(unsigned int i = 0; i < fileData.size(); i ++)
     {
-        Field field = Field(i, {fileData[i][0], fileData[i][1] + dist(mt)}, initColor);
+        Field field = Field(i, {fileData[i][0], fileData[i][1]}, initColor);
         for(unsigned int j = 2; j < fileData[i].size(); j ++)
         {
             field.state.push_back(fileData[i][j]);

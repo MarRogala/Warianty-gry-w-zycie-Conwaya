@@ -4,11 +4,14 @@
 
 \polishtitle    {Warianty gry w życie Conwaya}
 \englishtitle   {Conway's Game of Life variants}
-\polishabstract {Przedstawiona praca opisuje implementację projektu, umożliwiającego tworzenie i wizualizację wariantów gry w życie Conwaya opartych na planszy zbudowanej na podstawie diagramów Woronoja. Części składowe projektu to generator diagramów Woronoja oparty na algorytmie S. Fortunea, wizualizacja gry przy zastosowaniu API OpenGl oraz ewaluator języka opisu gry.}
-\englishabstract{This paper describes the project, which alowes, creation and visualization of Conway's Game of Life variants, on a a board made of Voronoi diagrams. Project consist of Voronoi diagrams generator using S. Fortune's algoritm, game visualisation using OpenGl API and game description language evaluator.}
+\polishabstract {Przedstawiona praca opisuje implementację projektu, umożliwiającego tworzenie i wizualizację wariantów gry w życie Conwaya opartych na planszy zbudowanej na podstawie diagramów Woronoja. Części składowe projektu to generator diagramów Woronoja oparty na algorytmie S. Fortunea, wizualizacja gry przy zastosowaniu API OpenGL oraz ewaluator języka opisu gry.}
+\englishabstract{This paper describes a program for creation and visualization of a Conway’s Game of Life variant, where a board consists of Voronoi diagrams. The project consist of the following three components:
+a Voronoi diagrams generator using Fortune’s algorithm,
+a game visualization engine using OpenGl API,
+and a game description language evaluator.}
 \author         {Marcin Rogala}
 \advisor        {dr hab. Jan Otop}
-\date          {25 grudnia 2020}
+\date          {today}
 \transcriptnum {300084}
 \advisorgen    {dr hab. Jan Otopa}
 
@@ -40,7 +43,7 @@
 
 \chapter{Wprowadzenie}
 \section{Gra w życie}
-Gra w życie, została zaprezentowana w 1970 roku przez Johna Conwaya na łamach miesięcznika \textit{Scientific American} \cite{gardner}.  Jest~to~gra bez graczy, co oznacza, że jej ewolucja zależy tylko od stanu początkowego bez późniejszych ingerencji człowieka. Planszą jest dwu wymiarowa siatka kwadratowych komórek, z których każda ma 8 sąsiadów. Każda komórka może być żywa lub martwa. W standardowej grze obowiązują tylko trzy reguły:
+Gra w życie, została zaprezentowana w 1970 roku przez Johna Conwaya na łamach miesięcznika \textit{Scientific American} \cite{gardner}.  Jest~to~gra bez graczy, co oznacza, że jej ewolucja zależy tylko od stanu początkowego bez późniejszych ingerencji człowieka. Planszą jest dwu wymiarową siatka kwadratowych komórek, z których każda ma 8 sąsiadów. Każda komórka może być żywa lub martwa. W standardowej grze obowiązują tylko trzy reguły:
 
 \begin{itemize}
 \item martwa komórka rodzi jeśli ma dokładnie 3 żywych sąsiadów,
@@ -52,8 +55,8 @@ Przedstawione przez Conwaya proste zasady pozwoliły zachować równowagę pomi�
 
 Gra w życie ma wiele ciekawych właściwości. Jedną z nich jest równoważność maszynie Turinga, co oznacza, że ma takie same możliwości obliczeniowe jak komputer z nieskończoną pamięcią i brakiem ograniczeń czasowych. Przy użyciu gry~w~życie możliwa jest konstrukcja bramek logicznych oraz implementacja różnych systemów komputerowych. Gra może przebiegać chaotycznie lub według jednego z ustalonych wzorców: 
 \begin{itemize}
-	\item stabilny -- pozostają niezmienne bez względu na kolejne przekształcenia,
-	\item oscylatory -- zmieniają się cyklicznie, regularnie wracają do poprzednich stanów,
+	\item stabilny -- układ pozostaje niezmienny bez względu na kolejne przekształcenia,
+	\item oscylatory -- układ zmienia się cyklicznie, regularnie wraca do poprzednich stanów,
 	\item statki -- oscylatory zmieniające swoją pozycję na planszy.
 \end{itemize}
 
@@ -73,9 +76,9 @@ Algorytm Fortunea rozpatruje względem współrzędnej $y$ następujące wydarze
 \end{itemize}
 Po rozpatrzeniu wszystkich wydarzeń wynikiem działania algorytmu są krawędzie oraz graf sąsiedztwa pól diagramu Woronoja.
 
-\hyperref[sec:parser]{Drugą częścią pracy} jest opis gramatyki oraz mechanizmu prasowania i ewaluacji języka opisu gry. Parser tworzonych przez użytkowników programów wykorzystuje bibliotekę PEGTL, która opiera się na gramatycę PEG oraz parsowaniu z góry na dół. Wynikiem parsowania jest abstrakcyjne drzewo rozkładu języka, które jest następnie ewaluowane do odpowiednich funkcji opisujących grę w życie.
+\hyperref[sec:parser]{Drugą częścią pracy} jest opis gramatyki oraz mechanizmu parsowania i ewaluacji języka opisu gry. Parser tworzonych przez użytkowników programów wykorzystuje bibliotekę PEGTL, która opiera się na gramatycę PEG oraz parsowaniu z góry na dół. Wynikiem parsowania jest abstrakcyjne drzewo rozkładu języka, które jest następnie tłumaczone do wewnętrznej reprezentacji opisującej zasady gry w życie.
 
-\hyperref[sec:openGl]{Kolejna część} to opis wykorzystania API OpenGl do przeprowadzenia wizualizacji gry.
+\hyperref[sec:openGl]{Kolejna część} to opis wykorzystania API OpenGL do przeprowadzenia wizualizacji gry.
 
 \hyperref[sec:tools]{Pracę uzupełnia opis} istniejących narzędzi i algorytmów do przeprowadzania symulacji z użyciem gry w życie.
 
@@ -109,7 +112,7 @@ Jednym ze sposobów  generowania diagramów Woronoja jest algorytm zaproponowany
 \textit{Miotłą} nazywamy poziomą linię poruszającą się od dołu do góry planszy. Miotła napotyka wydarzenia, w kolejności ich występowania. Wszystkie wydarzenia poniżej miotły zostały już rozpatrzone przez algorytm, natomiast te powyżej miotły zostaną rozpatrzone, gdy miotła dojdzie do ich wysokości.
 \end{definition}
 
-Najważniejszą strukturą algorytmu jest towarzysząca miotle linia brzegowa. Składa się ona z parabol, rozpinających się nad rozpatrzonymi przez miotłę punktami oraz nieukończonych krawędzi diagramu. W czasie trwania algorytmu parabole rozszerzają się, a ich przecięcia wyznaczają krawędzie. Parabola, która tworzy pole z centrum $p = (x_p, y_p)$ jest zbiorem $\{ x \quad | \quad x \in \mathbb{R}^2 \land dist(p, x) = dist(p_s, x) \}$, gdzie przez $p_s$ oznaczamy punkt na miotle znajdujący się najbliżej $x$. 
+Najważniejszą strukturą algorytmu jest towarzysząca miotle linia brzegowa. Składa się ona z parabol, rozpinających się nad rozpatrzonymi przez miotłę punktami oraz nieukończonych krawędzi diagramu. W czasie trwania algorytmu parabole rozszerzają się, a ich przecięcia wyznaczają krawędzie. Wszystkie fragmenty diagramu znajdujące się pod linią brzegową są już poprawnie wyznaczone. Ich wygląd nie zależy od kolejnych wydarzeń. Parabola, która tworzy pole z centrum $p = (x_p, y_p)$ jest zbiorem $\{ x \quad | \quad x \in \mathbb{R}^2 \land dist(p, x) = dist(p_s, x) \}$, gdzie przez $p_s$ oznaczamy punkt na miotle znajdujący się najbliżej $x$. 
 
 Poruszająca się przez planszę miotła napotyka dwa rodzaje wydarzeń.
 
@@ -119,19 +122,26 @@ Poruszająca się przez planszę miotła napotyka dwa rodzaje wydarzeń.
 \end{itemize}
 
 \begin{example}
-Przykładowe kroki podczas trwania algorytmu.
+Przykładowe kroki podczas trwania algorytmu. Podczas ostatniego kroku miotła znajduję się na wysokości będącej poza wyświetlaną planszą.
 
 	\begin{center}
-		\includegraphics[width=0.35\textwidth]{fortune2}
-		\includegraphics[width=0.35\textwidth]{fortune3}
+		\includegraphics[width=0.34\textwidth]{fortune2}
+		\includegraphics[width=0.34\textwidth]{fortune3}
 	\end{center}
 	\begin{center}
-		\includegraphics[width=0.35\textwidth]{fortune4}
-		\includegraphics[width=0.35\textwidth]{fortune5}
+		\includegraphics[width=0.34\textwidth]{fortune4}
+		\includegraphics[width=0.34\textwidth]{fortune5}
 	\end{center}
 \end{example}
 
-Każda parabole, zdefiniowana jest przez miotłę i jeden z punktów, będących centrami pól diagramu. Punkty leżące na paraboli są w równej odległości od centrum pola które je definiuje oraz najbliższego punktu na miotle.
+Każda parabola, zdefiniowana jest przez miotłę i jeden z punktów, będących centrami pól diagramu. Punkty leżące na paraboli są w równej odległości od centrum pola które je definiuje oraz najbliższego punktu na miotle.
+
+\begin{example}
+Przykład pokazujący odległości między punktem na paraboli, centrum i miotłą.
+	\begin{center}
+				\includegraphics[width=0.7\textwidth]{distance}
+	\end{center}
+\end{example}
 
 Wyznaczymy wzór $f(x)$ parabol znajdujących się w linii brzegowej.
 Niech~$y_s$~oznacza wysokość, na której znajduje się miotła, a $(x_c, y_c)$ będzie centrum pola, które definiuje parabolę. 
@@ -205,7 +215,7 @@ Załóżmy, że parabola $P2$ zostaje ściśnięta i musimy usunąć ją z linii
 \subsection{Implementacja}
 
 \subsubsection{Pseudokod}
-Poniższy pseudokod pokazuje, bardzo uproszczony sposób rozpatrywania wydarzeń. Wydarzenia trzymane są na stosie, zaimplementowanym przy użyciu $priority\_queue$ ze standardowej biblioteki języka $C++$.
+Poniższy pseudokod pokazuje, bardzo uproszczony sposób rozpatrywania wydarzeń. Wydarzenia trzymane są w kopcu, zaimplementowanym przy użyciu $priority\_queue$ ze standardowej biblioteki języka $C++$.
 
 \begin{algorithm}[H]
 \SetAlgoLined
@@ -255,7 +265,7 @@ Linia brzegowa -- \textit{Beachline}, jest najważniejszą strukturą całego al
 \end{itemize}
 
 \subsection{Złożoność}
-Obsługa każdego wydarzenia typu \textit{site event} dodaje dwie nowe krawędzie oraz dwie nowe parabole do linii brzegowej. Załóżmy, że każda parabola ma przypisane wydarzenie typu \textit{circle event}. Obsługa wydarzenia \textit{circle event} zmniejsza liczbę parabol oraz krawędzi. Oznacza to, że dla $n$ pól diagramu w linii brzegowej będzie $O(n)$ elementów oraz w $eventQueue$ będzie $O(n)$ wydarzeń. Ze względu, na złożoność wyszukiwania parabol w linii brzegowej -- $O(n)$, złożoność całego algorytmu to $O(n^2)$. Możliwe jest osiągnięcie złożoności $O(nlog(n)$, przez zastosowanie zbalansowanego drzewa binarnego do przechowywania elementów linii brzegowej.
+Obsługa każdego wydarzenia typu \textit{site event} dodaje dwie nowe krawędzie oraz dwie nowe parabole do linii brzegowej. Załóżmy, że każda parabola ma przypisane wydarzenie typu \textit{circle event}. Obsługa wydarzenia \textit{circle event} zmniejsza liczbę parabol oraz krawędzi. Oznacza to, że dla $n$ pól diagramu w linii brzegowej będzie $O(n)$ elementów oraz w $eventQueue$ będzie $O(n)$ wydarzeń. Ze względu, na złożoność wyszukiwania parabol w linii brzegowej -- $O(n)$, złożoność całego algorytmu to $O(n^2)$. Możliwe jest osiągnięcie złożoności $O(nlogn)$, przez zastosowanie zbalansowanego drzewa binarnego do przechowywania elementów linii brzegowej.
 
 
 \section{Inne algorytmy}
@@ -291,7 +301,7 @@ Podane liczby są mniejsze lub równe $8$, przez co nie ma potrzeby w żaden spo
 $23/3$ to opis zasad gry w życie zaproponowanej przez Conwaya.
 \end{example}
 
-Niestety, nieregularność diagramów Woronoja oraz bardziej rozbudowany stan komórek nie pozwala na opisywanie gry w tak prosty sposób. W omawianym projekcie użytkownik definiuje zasady, przy użyciu prostego języka, którego składnia przypomina składnię języka $C$. Takie rozwiązanie pozwala na wykonywanie bardziej skomplikowanych obliczeń podczas przechodzenia między stanami oraz obsługę stanów będących krotkami liczb rzeczywistych, co pozwala na przechowywanie większej ilości informacji o komórce. Użytkownik definiuje także sposób w jaki komórka będzie wyświetlana. Korzystając z bieżącego stanu, określamy jej kolorowanie w postaci \textit{RGB}.
+Niestety, nieregularność diagramów Woronoja oraz bardziej rozbudowany stan komórek nie pozwala na opisywanie gry w tak prosty sposób. W omawianym projekcie użytkownik definiuje zasady, przy użyciu prostego języka, którego składnia przypomina składnię języka $C$. Takie rozwiązanie pozwala na wykonywanie bardziej skomplikowanych obliczeń podczas przechodzenia między stanami oraz obsługę stanów będących krotkami liczb zmiennoprzecinkowych, co pozwala na przechowywanie większej ilości informacji o komórce. Użytkownik definiuje także sposób w jaki komórka będzie wyświetlana. Korzystając z bieżącego stanu, określamy jej kolorowanie w postaci \textit{RGB}.
 
 Do zdefiniowania zasad, użytkownik powinien napisać trzy programy. 
 \begin{itemize}
@@ -354,6 +364,8 @@ if(state[0] == 1)
 \section{Dane początkowe}
 Dane do programu przekazujemy w pliku o rozszerzeniu \textit{.csv}. Pierwszy wiersz pliku zawiera niebędące liczbami nazwy kolumn. Kolejne wiersze zawierają początkowe informacje o komórkach. Pierwsze dwie kolumny każdego wiersza, opisują współrzędne punktów służących do generowania diagramu Woronoja.  Współrzędne muszą zawierać się w przedziale $[-1, 1]$. Kolejne kolumny zawierające dowolne liczby rzeczywiste opisują początkowy stan komórek. Liczba podanych kolumn definiuje rozmiar stanu komórek. Liczby rzeczywiste w pliku wejściowym powinny być zapisane w formacie angielskim -- część ułamkowa oddzielona kropką.
 
+Liczba kolumn podanych w pliku wejściowym, definiuje rozmiar stanu komórek. Dla pliku zawierającego $4$ kolumny, rozmiar stanu komórek gry to $2$.
+
 \begin{example}
 Przykładowy plik wejściowy opisujący współrzędne punktów oraz stan początkowy zawierający jedną liczbę.
 \begin{center}
@@ -390,13 +402,14 @@ Przykładowy plik wejściowy opisujący współrzędne punktów oraz stan począ
 \subsection{Komentarze}
 
 Użytkownik pisząc programy, może umieścić w nich komentarze. Blok komentarza zaczyna się i kończy znakiem \#. 
+Pojedynczy blok może zawierać wiele linii, o ile znajdują się one w oznaczonym znakami \# obszarze.
 
 \begin{example}
 \# Tekst komentarza \#
 \end{example}
 
 \subsection{Zmienne}
-Zmienne przechowują liczby typu rzeczywistego. Nazwy zmiennych tworzone są, tak jak w języku $C$. Użytkownik nie deklaruje zmiennych,~a~zmienna bez przypisanej wartości ma domyślnie wartość $0$.
+Zmienne przechowują liczby typu zmiennoprzecinkowego. Nazwy zmiennych tworzone są, tak jak w języku $C$. Użytkownik nie deklaruje zmiennych,~a~zmienna bez przypisanej wartości ma domyślnie wartość $0$.
 
 \subsection{Atrybuty}
 Atrybuty to krotki przechowujące informacje o kolorze i stanie komórek. Dostęp do wartości atrybutów wykonujemy przez operator~$[]$~ do~którego podajemy liczby naturalne z przedziału $[0, n)$, gdzie $n$ to rozmiar atrybutu. Podczas wykonywania napisanych przez użytkownika programów mamy dostęp~do~następujących atrybutów: 
@@ -405,7 +418,7 @@ Atrybuty to krotki przechowujące informacje o kolorze i stanie komórek. Dostę
 	\item \textit{state} -- krotka z której odczytujemy aktualny stan komórki,
 	\item \textit{newState} -- krotka do której zapisujemy wyliczony nowy stan komórki.
 	\end{itemize}
-Użytkownik nie może wykorzystywać innych atrybutów. Rozmiar \textit{state} i \textit{newState} zależy od dostarczonych do programu danych początkowych. 	
+Użytkownik nie może wykorzystywać innych atrybutów. Rozmiar \textit{state} i \textit{newState} zależy od liczby kolumn w dostarczonych danych początkowych.
 
 \subsection{Wywołanie funkcji}
 Wywołanie funkcji ma następującą formę:
@@ -413,11 +426,11 @@ Wywołanie funkcji ma następującą formę:
 nazwaFunkcji(argument1,[argument2, \dots])
 \end{align}
 
-Argumentami funkcji mogą być liczby rzeczywiste lub naturalne. Wywołanie funkcji może być osobną instrukcją programu (wtedy wartość zwracana przez funkcję jest ignorowana) lub częścią wyrażenia.
+Argumentami funkcji mogą być liczby zmiennoprzecinkowe lub całkowite. Wywołanie funkcji może być osobną instrukcją programu (wtedy wartość zwracana przez funkcję jest ignorowana) lub częścią wyrażenia.
 Podczas pisania programów, użytkownik ma do dyspozycji przygotowane wcześniej następujące funkcje:
 \begin{itemize}
-\item \textit{count(index, value)} -- zwraca liczbę sąsiadów komórki, których stan spełnia \textit{state[index] == value}.
-\item \textit{random(l, r)} -- zwraca losową liczbę rzeczywistą z przedziału $[l, r]$. Funkcja korzysta z rozkładu jednostajnego.
+\item \textit{count(index, value)} -- zwraca liczbę sąsiadów komórki, których stan spełnia \textit{state[index] == value}, gdzie \textit{state[index]}, to element stanu komórki znajdujący się na pozycji o numerze \textit{index}.
+\item \textit{random(l, r)} -- zwraca losową liczbę zmiennoprzecinkową z przedziału $[l, r]$. Funkcja korzysta z rozkładu jednostajnego.
 \item \textit{stepsLimit(limit)} -- ustawia limit kroków do wykonania. Wartość $-1$ oznacza nieskończoność.
 \item \textit{initialColor(r, g, b)} -- ustawia początkowy kolor komórek.
 \item \textit{printEvery(value)} -- ustawia co ile kroków wygląd planszy jest aktualizowany.
@@ -431,7 +444,7 @@ W prezentowanym języku dostępne są operatory binarne: $+, -, * , /, \%, <, >,
 Operatory logiczne zwracają wartości $1$ i $0$, oznaczające odpowiednio prawdę i fałsz.
 Wyrażeniami mogą być następujące konstrukcje:
 \begin{itemize}
-\item liczba rzeczywista lub naturalna,
+\item liczba zmiennoprzecinkowa lub całkowita,
 \item wywołanie funkcji,
 \item zmienna lub dostęp do wartości atrybutu,
 \item operator binarny.
@@ -532,7 +545,7 @@ struct floatingPoint : seq <
 \begin{itemize}
 \item Dodatnia liczba całkowita zdefiniowana jest przez niepusty ciąg cyfr.
 \item Liczba całkowita zdefiniowana jest jako dodatnia liczba całkowita poprzedzona opcjonalnym minusem.
-\item Liczba rzeczywista zdefiniowana jest jako opcjonalny minus, po którym następuje niepusty ciąg cyfr, kropka oraz ponownie niepusty ciąg cyfr.
+\item Liczba zmiennoprzecinkowa zdefiniowana jest jako opcjonalny minus, po którym następuje niepusty ciąg cyfr, kropka oraz ponownie niepusty ciąg cyfr.
 \end{itemize}
 
 \section{Klasy Instruction i Expression}
@@ -540,7 +553,7 @@ struct floatingPoint : seq <
 Abstrakcyjna klasa \textit{Expression} jest podstawą struktury wyrażeń zdefiniowanych w pliku \textit{Evaluation.h}. \textit{Expression} zawiera wirtualną metodę \textit{calculate}, która jest implementowana przez klasy dziedziczące. Pozwala to na łatwe obliczanie wartości rozbudowanych wyrażeń zawartych w programach.
 
 \begin{example}
-Klasa dziedzicząca po \textit{Expression} reprezentująca liczbę rzeczy rzeczywistą.
+Klasa dziedzicząca po \textit{Expression} reprezentująca liczbę zmiennoprzecinkową.
 \begin{center}
 \begin{lstlisting}
 class Number : public Expression {
@@ -665,6 +678,8 @@ void main()
 \end{center}
 
 \chapter{Przykładowe symulacje}
+
+W katalogu \textit{input} znajdują się różne wersje plików wejściowych przystosowanych do przedstawionych niżej przykładów.
 
 \section{Pulsujące pierścienie i pechowe pola}
 
@@ -890,9 +905,9 @@ Gra w życie zyskała dużą popularność. Od czasu jej publikacji powstało wi
 \section{PlayGameOfLife}
 Jest to narzędzie symulujące podstawową grę w życie przedstawioną przez Conwaya. Dane wprowadzane są przez użytkownika ręcznie, zaznaczając żywe pola na interaktywnej planszy. Symulację przeprowadzamy online, pod adresem \url{https://playgameoflife.com/}. Dodatkowe możliwości:
 \begin{itemize}
-\item modyfikacja planszy w trakcie trwania symulacji
-\item zatrzymywanie symulacji i wykonywanie pojedynczych kroków
-\item zmiana odstępu czasowego pomiędzy krokami
+\item modyfikacja planszy w trakcie trwania symulacji,
+\item zatrzymywanie symulacji i wykonywanie pojedynczych kroków,
+\item zmiana odstępu czasowego pomiędzy krokami.
 \end{itemize}
 
 \section{Golly}
@@ -920,11 +935,11 @@ Algorytm \textit{hashlife} reprezentuje planszę jako drzewo, którego każdy wi
 
 \chapter{Podsumowanie}
 
-\section{Woronoja}
-Pierwszą wyzwaniem podczas pracy nad projektem była odpowiednia implementacja algorytmu \textit{Fortunea}, generującego diagramy Woronoja. Niezbędna geometria wymaga wykonywania obliczeń na liczbach rzeczywistych oraz rozpatrzenie wielu przypadków brzegowych. Koncepcja wszystkich obliczeń jest bardzo prosta ale liczba obsługiwanych podczas trwania algorytmu krawędzi i parabol sprawia, że nawet drobny błąd obliczeniowy, może prowadzić do całkowicie zniekształconego diagramu. Obecna wersja implementacji pozwala na bezproblemowe generowanie diagramu posiadającego więcej niż $100000$ pól w czasie kilku sekund. 
+\section{Diagramy Woronoja}
+Pierwszą wyzwaniem podczas pracy nad projektem była odpowiednia implementacja algorytmu \textit{Fortunea}, generującego diagramy Woronoja. Niezbędna geometria wymaga wykonywania obliczeń na liczbach zmiennoprzecinkowych oraz rozpatrzenie wielu przypadków brzegowych. Koncepcja wszystkich obliczeń jest bardzo prosta ale liczba obsługiwanych podczas trwania algorytmu krawędzi i parabol sprawia, że nawet drobny błąd obliczeniowy, może prowadzić do całkowicie zniekształconego diagramu. Obecna wersja implementacji pozwala na bezproblemowe generowanie diagramu posiadającego więcej niż $100000$ pól w czasie kilku sekund. 
 
 \section{Wizualizacja}
-Podczas rozbudowywania programu natknąłem się na kolejny duży problem. Pierwsza wersja wizualizacji wykorzystująca \textit{legacy OpenGl} okazała się być zbyt wolna. Symulacja prostej gry na planszy zawierającej kilka tysięcy pól była niepłynna, a oczekiwanie na dalsze kroki zbyt długie. Problem udało się rozwiązać wykorzystując współczesne techniki dostępne w OpenGl. Przesyłanie informacji o wyglądzie planszy tylko w momencie, gdy jest to konieczne pozwoliło osiągnąć płynność nawet dużych symulacji. W tym miejscu pozostaje potencjał do poprawy. Wykorzystując \textit{Vertex Buffer Array}, możliwe jest zredukowanie redundancji przesyłanych danych, co powinno dodatkowo przyśpieszyć wizualizację.
+Podczas rozbudowywania programu natknąłem się na kolejny duży problem. Pierwsza wersja wizualizacji wykorzystująca \textit{legacy OpenGL} okazała się być zbyt wolna. Symulacja prostej gry na planszy zawierającej kilka tysięcy pól była niepłynna, a oczekiwanie na dalsze kroki zbyt długie. Problem udało się rozwiązać wykorzystując współczesne techniki dostępne w OpenGL. Przesyłanie informacji o wyglądzie planszy tylko w momencie, gdy jest to konieczne pozwoliło osiągnąć płynność nawet dużych symulacji. W tym miejscu pozostaje potencjał do poprawy. Wykorzystując \textit{Vertex Buffer Array}, możliwe jest zredukowanie redundancji przesyłanych danych, co powinno dodatkowo przyśpieszyć wizualizację.
 
 \section{Język opisu gry}
 Grę w życie zaprezentowaną przez Conwaya opisują trzy liczby. Taka prosta reprezentacja zasad, utrudniona jest przez nieregularność planszy, dlatego w przedstawionym projekcie, zasady implementowane są w prostym języku opisu gry. Parsowanie przygotowanych przez użytkownika programów, odbywa się przy użyciu biblioteki \textit{PEGTL}. Wynikiem parsowania jest abstrakcyjne drzewo składni języka złożone z dostarczonych struktur. Odpowiednie interpretowanie wynikowego drzewa pozwala na wykonanie programów zawierających reguły gry. Niestety, takie rozwiązanie okazało się być zbyt wolne. Cały zysk, otrzymany przez poprawę wizualizacji, został wykorzystany na interpretowanie programów. 
