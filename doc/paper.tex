@@ -11,7 +11,7 @@ a game visualization engine using OpenGl API,
 and a game description language evaluator.}
 \author         {Marcin Rogala}
 \advisor        {dr hab. Jan Otop}
-\date          {today}
+\date          {\today}
 \transcriptnum {300084}
 \advisorgen    {dr hab. Jan Otopa}
 
@@ -664,7 +664,7 @@ void main()
 \end{center}
 
 \subsection{Fragment shader}
-Shader wyświetlający ciało trójkąta w kolorze będącym interpolacją kolorów wierzchołków.
+Shader wyświetlający ciało trójkąta w kolorze będącym interpolacją kolorów wierzchołków. Kolory trójkątów są jednolite i takie same jak przekazane do Vertex shadera. Mimo istniejącej redundancji danych, takie rozwiązanie jest szybsze, niż wywoływanie funkcji rysujących trójkąt z \textit{legcay OpenGL}.
 \begin{center}
 \begin{lstlisting}
 precision mediump float;
